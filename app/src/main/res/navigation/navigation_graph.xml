@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/addFragment"
         android:name="com.example.weatherlicious.AddFragment"
-        android:label="fragment_add"
+        android:label="Add a new city"
         tools:layout="@layout/fragment_add" >
         <action
             android:id="@+id/action_addFragment_to_mainFragment"
