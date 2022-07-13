@@ -1,4 +1,4 @@
-package com.example.weatherlicious
+package com.example.weatherlicious.ui.addfragment
 
 import android.os.Bundle
 import android.view.*
@@ -6,8 +6,11 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import com.example.weatherlicious.R
 import com.example.weatherlicious.databinding.FragmentAddBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddFragment : Fragment() {
 
     private var _binding: FragmentAddBinding? = null
