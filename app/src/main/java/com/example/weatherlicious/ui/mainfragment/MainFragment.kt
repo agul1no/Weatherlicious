@@ -1,15 +1,17 @@
-package com.example.weatherlicious
+package com.example.weatherlicious.ui.mainfragment
 
 import android.os.Bundle
-import android.text.Layout
 import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.weatherlicious.R
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.google.android.material.appbar.AppBarLayout
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
