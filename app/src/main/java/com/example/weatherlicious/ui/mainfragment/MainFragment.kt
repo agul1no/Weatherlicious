@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherlicious.R
+import com.example.weatherlicious.data.model.currentweather.CurrentWeather
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,9 +35,7 @@ class MainFragment : Fragment() {
         createMenuAddIcon()
 
         mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { currentWeather ->
-            binding.collapsingToolbar.title = currentWeather.location.name
-            binding.tvCityName.text = currentWeather.location.name
-            binding.tvDate.text = currentWeather.location.localtime
+            bindDataFromViewModelToViews(currentWeather)
             Log.d("Debug", currentWeather.toString())
         }
 
@@ -82,6 +81,19 @@ class MainFragment : Fragment() {
             }
 
         })
+    }
+
+    private fun bindDataFromViewModelToViews(currentWeather: CurrentWeather){
+        binding.apply {
+            collapsingToolbar.title = currentWeather.location.name
+            tvCityName.text = currentWeather.location.name
+            tvDate.text = currentWeather.location.localtime
+            tvTemperature.text = "${currentWeather.current.temp_c.toInt()}°"
+            tvFeelsLike.text = "Feelslike:  ${currentWeather.current.feelslike_c}°"
+            tvWindKPH.text = "Wind:  ${currentWeather.current.wind_kph.toInt()} Kph"
+            tvConditionText.text = currentWeather.current.condition.text
+        }
+
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

@@ -111,6 +111,52 @@
                         app:layout_constraintTop_toBottomOf="@+id/tvCityName"
                         tools:text="Tu., 12 July 20:54" />
 
+                    <ImageView
+                        android:id="@+id/ivConditionIcon"
+                        android:layout_width="50dp"
+                        android:layout_height="60dp"
+                        app:layout_constraintStart_toStartOf="@+id/tvDate"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDate"
+                        android:src="@mipmap/weatherlicious_logo"
+                        tools:src="@mipmap/weatherlicious_logo"/>
+
+                    <TextView
+                        android:id="@+id/tvTemperature"
+                        android:layout_width="wrap_content"
+                        android:layout_height="60dp"
+                        android:textSize="46sp"
+                        app:layout_constraintStart_toEndOf="@+id/ivConditionIcon"
+                        app:layout_constraintTop_toBottomOf="@+id/tvDate"
+                        tools:text="23°"/>
+
+                    <TextView
+                        android:id="@+id/tvFeelsLike"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        android:layout_marginEnd="20dp"
+                        app:layout_constraintBottom_toBottomOf="@+id/tvTemperature"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="feelslike 20°" />
+
+                    <TextView
+                        android:id="@+id/tvWindKPH"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvFeelsLike"
+                        app:layout_constraintEnd_toEndOf="@+id/tvFeelsLike"
+                        tools:text="Wind: 9.2 Kph" />
+
+                    <TextView
+                        android:id="@+id/tvConditionText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvWindKPH"
+                        app:layout_constraintEnd_toEndOf="@+id/tvWindKPH"
+                        tools:text="Clear" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
