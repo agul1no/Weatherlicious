@@ -1,12 +1,11 @@
 package com.example.weatherlicious.data.source.repository
 
-import com.example.weatherlicious.data.source.local.WeatherLocal
-import com.example.weatherlicious.data.source.remote.WeatherRemote
-import javax.inject.Inject
+import com.example.weatherlicious.data.model.currentweather.CurrentWeather
+import retrofit2.Response
 
 interface WeatherRepository {
 
-    suspend fun getCurrentWeather()
+    suspend fun getCurrentWeather(): CurrentWeather
 
     suspend fun getWeatherForecastHourly()
 

@@ -1,10 +1,14 @@
 package com.example.weatherlicious.ui.mainfragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.core.view.MenuProvider
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherlicious.R
 import com.example.weatherlicious.databinding.FragmentMainBinding
@@ -17,6 +21,8 @@ class MainFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
 
+    private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,6 +32,13 @@ class MainFragment : Fragment() {
         hideWeatherImage()
 
         createMenuAddIcon()
+
+        mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { currentWeather ->
+            binding.collapsingToolbar.title = currentWeather.location.name
+            binding.tvCityName.text = currentWeather.location.name
+            binding.tvDate.text = currentWeather.location.localtime
+            Log.d("Debug", currentWeather.toString())
+        }
 
         return binding.root
     }
@@ -60,10 +73,12 @@ class MainFragment : Fragment() {
             binding.ivCurrentWeather.alpha = 0.8F - percent
             //binding.ivCurrentWeather.scaleY = (1F - percent) + percent / 1.199F
             if(percent < 0.8f){ //expanded
-                binding.collapsingToolbar.title = "Expanded"
+                //binding.collapsingToolbar.title = "Expanded"
+                binding.gradientBottom.isVisible = true
             }
             if(percent > 0.8f){
-                binding.collapsingToolbar.title = "Collapsed"
+                //binding.collapsingToolbar.title = "Collapsed"
+                binding.gradientBottom.isVisible = false
             }
 
         })

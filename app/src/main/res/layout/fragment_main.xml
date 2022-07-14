@@ -21,7 +21,7 @@
             app:collapsedTitleTextColor="@color/white"
             app:expandedTitleTextColor="@color/white"
             app:collapsedTitleGravity="center"
-            app:expandedTitleGravity="center|bottom"
+            app:expandedTitleGravity="center"
             app:contentScrim="@color/blue"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:titleCollapseMode="fade"
@@ -46,8 +46,17 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 android:alpha="0.85">
-
             </ImageView>
+
+            <View
+                android:id="@+id/gradient_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/gradient_bottom_image"
+                android:layout_gravity="bottom">
+
+            </View>
+
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -68,9 +77,9 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewCurrentWeather"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                app:cardCornerRadius="40dp"
-                android:layout_marginTop="40dp"
+                android:layout_height="340dp"
+                app:cardCornerRadius="20dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -110,8 +119,8 @@
                 android:id="@+id/cardViewForecast"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                app:cardCornerRadius="40dp"
-                android:layout_marginTop="40dp"
+                app:cardCornerRadius="20dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewCurrentWeather" >
@@ -121,8 +130,8 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
-                app:cardCornerRadius="40dp"
-                android:layout_marginTop="40dp"
+                app:cardCornerRadius="20dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toBottomOf="@id/cardViewForecast"/>
