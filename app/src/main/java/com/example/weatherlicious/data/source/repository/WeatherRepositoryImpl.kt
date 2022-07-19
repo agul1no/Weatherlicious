@@ -11,7 +11,7 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemote: WeatherRemote,
 ): WeatherRepository {
 
-    override suspend fun getCurrentWeather(): CurrentWeather {
+    override suspend fun getCurrentWeather(): Response<CurrentWeather> {
         return weatherRemote.getCurrentWeather()
     }
 

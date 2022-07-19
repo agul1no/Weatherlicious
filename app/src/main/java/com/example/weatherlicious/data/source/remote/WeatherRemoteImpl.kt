@@ -9,7 +9,7 @@ class WeatherRemoteImpl @Inject constructor(
     private val weatherAPI: WeatherAPI
 ): WeatherRemote {
 
-    override suspend fun getCurrentWeather(): CurrentWeather {
+    override suspend fun getCurrentWeather(): Response<CurrentWeather> {
         return weatherAPI.getCurrentWeatherByCity()
     }
 

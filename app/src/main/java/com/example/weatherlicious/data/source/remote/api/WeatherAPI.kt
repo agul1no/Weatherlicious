@@ -7,7 +7,7 @@ import retrofit2.http.GET
 
 interface WeatherAPI {
 
-    @GET("current.json?key=${BuildConfig.API_KEY}&q=London&aqi=no")
-    suspend fun getCurrentWeatherByCity(): CurrentWeather
+    @GET("current.json?key=${BuildConfig.API_KEY}&q=Leipzig&aqi=no")
+    suspend fun getCurrentWeatherByCity(): Response<CurrentWeather>
 
 }

@@ -34,9 +34,12 @@ class MainFragment : Fragment() {
 
         createMenuAddIcon()
 
-        mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { currentWeather ->
-            bindDataFromViewModelToViews(currentWeather)
-            Log.d("Debug", currentWeather.toString())
+        mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { response ->
+            if (response.isSuccessful){
+                bindDataFromViewModelToViews(response.body())
+            }else{
+                binding.tvCityName.text = response.code().toString()
+            }
         }
 
         return binding.root
@@ -83,9 +86,9 @@ class MainFragment : Fragment() {
         })
     }
 
-    private fun bindDataFromViewModelToViews(currentWeather: CurrentWeather){
+    private fun bindDataFromViewModelToViews(currentWeather: CurrentWeather?){
         binding.apply {
-            collapsingToolbar.title = currentWeather.location.name
+            collapsingToolbar.title = currentWeather?.location!!.name
             tvCityName.text = currentWeather.location.name
             tvDate.text = currentWeather.location.localtime
             tvTemperature.text = "${currentWeather.current.temp_c.toInt()}°"

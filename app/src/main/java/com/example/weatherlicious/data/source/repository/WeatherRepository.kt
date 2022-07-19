@@ -5,7 +5,7 @@ import retrofit2.Response
 
 interface WeatherRepository {
 
-    suspend fun getCurrentWeather(): CurrentWeather
+    suspend fun getCurrentWeather(): Response<CurrentWeather>
 
     suspend fun getWeatherForecastHourly()
 
