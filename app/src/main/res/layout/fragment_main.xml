@@ -95,7 +95,8 @@
                         android:id="@+id/tvCityName"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
+                        android:textSize="20sp"
+                        android:textColor="?attr/colorOnSecondary"
                         android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
                         app:layout_constraintStart_toStartOf="parent"
@@ -106,15 +107,15 @@
                         android:id="@+id/tvDate"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         app:layout_constraintStart_toStartOf="@+id/tvCityName"
                         app:layout_constraintTop_toBottomOf="@+id/tvCityName"
                         tools:text="Tu., 12 July 20:54" />
 
                     <ImageView
                         android:id="@+id/ivConditionIcon"
-                        android:layout_width="50dp"
-                        android:layout_height="60dp"
+                        android:layout_width="60dp"
+                        android:layout_height="70dp"
                         app:layout_constraintStart_toStartOf="@+id/tvDate"
                         app:layout_constraintTop_toBottomOf="@+id/tvDate"
                         android:src="@mipmap/weatherlicious_logo"
@@ -125,6 +126,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="60dp"
                         android:textSize="46sp"
+                        android:textColor="?attr/colorOnSecondary"
+                        android:layout_marginStart="6dp"
                         app:layout_constraintStart_toEndOf="@+id/ivConditionIcon"
                         app:layout_constraintTop_toBottomOf="@+id/tvDate"
                         tools:text="23°"/>
@@ -133,7 +136,7 @@
                         android:id="@+id/tvFeelsLike"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         android:layout_marginEnd="20dp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvTemperature"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -143,16 +146,25 @@
                         android:id="@+id/tvWindKPH"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
+                        app:layout_constraintBottom_toTopOf="@+id/tvMaxUndMinTemp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvMaxUndMinTemp"
+                        tools:text="Wind: 9.2 Kph" />
+
+                    <TextView
+                        android:id="@+id/tvMaxUndMinTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvFeelsLike"
                         app:layout_constraintEnd_toEndOf="@+id/tvFeelsLike"
-                        tools:text="Wind: 9.2 Kph" />
+                        tools:text="36°/ 25°" />
 
                     <TextView
                         android:id="@+id/tvConditionText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="10sp"
+                        android:textSize="12sp"
                         app:layout_constraintBottom_toTopOf="@+id/tvWindKPH"
                         app:layout_constraintEnd_toEndOf="@+id/tvWindKPH"
                         tools:text="Clear" />

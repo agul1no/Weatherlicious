@@ -1,6 +1,7 @@
 package com.example.weatherlicious.data.source.repository
 
 import com.example.weatherlicious.data.model.currentweather.CurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.source.local.WeatherLocal
 import com.example.weatherlicious.data.source.remote.WeatherRemote
 import retrofit2.Response
@@ -15,7 +16,11 @@ class WeatherRepositoryImpl @Inject constructor(
         return weatherRemote.getCurrentWeather()
     }
 
-    override suspend fun getWeatherForecastHourly() {}
+    override suspend fun getWeatherForecastHourly(): Response<ForecastWeather> {
+        return weatherRemote.getWeatherForecastHourly()
+    }
 
-    override suspend fun getWeatherForecastDaily() {}
+    override suspend fun getWeatherForecastDaily(): Response<ForecastWeather> {
+        return weatherRemote.getWeatherForecastDaily()
+    }
 }

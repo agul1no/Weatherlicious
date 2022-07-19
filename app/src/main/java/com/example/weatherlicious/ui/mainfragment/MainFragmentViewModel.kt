@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherlicious.data.model.currentweather.CurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.source.repository.WeatherRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -16,17 +17,30 @@ class MainFragmentViewModel @Inject constructor(
     private val weatherRepository: WeatherRepository
 ): ViewModel() {
 
-    private var _currentWeather = MutableLiveData<Response<CurrentWeather>>()
-    val currentWeather = _currentWeather
+    //private var _currentWeather = MutableLiveData<Response<CurrentWeather>>()
+    //val currentWeather = _currentWeather
+
+    private var _forecastWeatherHourly = MutableLiveData<Response<ForecastWeather>>()
+    val forecastWeatherHourly = _forecastWeatherHourly
+
+    private var _forecastWeatherDaily = MutableLiveData<Response<ForecastWeather>>()
+    val forecastWeatherDaily = _forecastWeatherDaily
 
     init {
-        getCurrentWeather()
+        //getCurrentWeather()
+        getForecastWeatherHourly()
     }
 
-    private fun getCurrentWeather(){
+//    private fun getCurrentWeather(){
+//        viewModelScope.launch (Dispatchers.IO) {
+//            //_currentWeather.value = weatherRepository.getCurrentWeather().body()
+//            _currentWeather.postValue(weatherRepository.getCurrentWeather())
+//        }
+//    }
+
+    private fun getForecastWeatherHourly(){
         viewModelScope.launch (Dispatchers.IO) {
-            //_currentWeather.value = weatherRepository.getCurrentWeather().body()
-            _currentWeather.postValue(weatherRepository.getCurrentWeather())
+            _forecastWeatherHourly.postValue(weatherRepository.getWeatherForecastHourly())
         }
     }
 

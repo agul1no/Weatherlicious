@@ -12,6 +12,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.example.weatherlicious.R
 import com.example.weatherlicious.data.model.currentweather.CurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,13 +35,9 @@ class MainFragment : Fragment() {
 
         createMenuAddIcon()
 
-        mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { response ->
-            if (response.isSuccessful){
-                bindDataFromViewModelToViews(response.body())
-            }else{
-                binding.tvCityName.text = response.code().toString()
-            }
-        }
+        //observeCurrentWeather()
+
+        observeForecastWeatherHourly()
 
         return binding.root
     }
@@ -48,20 +45,6 @@ class MainFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    private fun createMenuAddIcon(){
-        activity?.addMenuProvider(object: MenuProvider{
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.add_menu_main_fragment, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-                return true
-            }
-
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun hideWeatherImage(){
@@ -86,17 +69,63 @@ class MainFragment : Fragment() {
         })
     }
 
-    private fun bindDataFromViewModelToViews(currentWeather: CurrentWeather?){
-        binding.apply {
-            collapsingToolbar.title = currentWeather?.location!!.name
-            tvCityName.text = currentWeather.location.name
-            tvDate.text = currentWeather.location.localtime
-            tvTemperature.text = "${currentWeather.current.temp_c.toInt()}°"
-            tvFeelsLike.text = "Feelslike:  ${currentWeather.current.feelslike_c}°"
-            tvWindKPH.text = "Wind:  ${currentWeather.current.wind_kph.toInt()} Kph"
-            tvConditionText.text = currentWeather.current.condition.text
-        }
+    private fun createMenuAddIcon(){
+        activity?.addMenuProvider(object: MenuProvider{
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.add_menu_main_fragment, menu)
+            }
 
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
+                return true
+            }
+
+        },) //viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+//    private fun observeCurrentWeather(){
+//        mainFragmentViewModel.currentWeather.observe(viewLifecycleOwner) { response ->
+//            if (response.isSuccessful){
+//                bindDataFromViewModelToViews(response.body())
+//            }else{
+//                binding.tvCityName.text = response.code().toString()
+//            }
+//        }
+//    }
+//
+//    private fun bindDataFromViewModelToViews(currentWeather: CurrentWeather?){
+//        binding.apply {
+//            collapsingToolbar.title = currentWeather?.location!!.name
+//            tvCityName.text = currentWeather.location.name
+//            tvDate.text = currentWeather.location.localtime
+//            tvTemperature.text = "${currentWeather.current.temp_c.toInt()}°"
+//            tvFeelsLike.text = "Feelslike:  ${currentWeather.current.feelslike_c}°"
+//            tvWindKPH.text = "Wind:  ${currentWeather.current.wind_kph.toInt()} Kph"
+//            tvConditionText.text = currentWeather.current.condition.text
+//        }
+//    }
+
+    private fun observeForecastWeatherHourly() {
+        mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
+            if (response.isSuccessful){
+                bindDataForForecastWeatherHourly(response.body())
+            }else{
+                binding.tvCityName.text = response.code().toString()
+            }
+        }
+    }
+
+    private fun bindDataForForecastWeatherHourly(forecastWeather: ForecastWeather?){
+        binding.apply {
+            collapsingToolbar.title = forecastWeather?.location!!.name
+            tvCityName.text = forecastWeather.location.name
+            tvDate.text = forecastWeather.location.localtime
+            tvTemperature.text = "${forecastWeather.current.temp_c.toInt()}°"
+            tvFeelsLike.text = "Feelslike:  ${forecastWeather.current.feelslike_c.toInt()}°"
+            tvWindKPH.text = "Wind:  ${forecastWeather.current.wind_kph.toInt()} Kph"
+            tvMaxUndMinTemp.text = "${forecastWeather.forecast.forecastday[0].day.maxtemp_c.toInt()}° / ${forecastWeather.forecast.forecastday[0].day.mintemp_c.toInt()}°"
+            tvConditionText.text = forecastWeather.current.condition.text
+        }
     }
 
 //    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
