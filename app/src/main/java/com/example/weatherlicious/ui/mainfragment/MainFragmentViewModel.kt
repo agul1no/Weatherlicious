@@ -26,10 +26,6 @@ class MainFragmentViewModel @Inject constructor(
     private var _forecastWeatherDaily = MutableLiveData<Response<ForecastWeather>>()
     val forecastWeatherDaily = _forecastWeatherDaily
 
-    init {
-        //getCurrentWeather()
-        getForecastWeatherHourly()
-    }
 
 //    private fun getCurrentWeather(){
 //        viewModelScope.launch (Dispatchers.IO) {
@@ -38,7 +34,7 @@ class MainFragmentViewModel @Inject constructor(
 //        }
 //    }
 
-    private fun getForecastWeatherHourly(){
+    fun getForecastWeatherHourly(){
         viewModelScope.launch (Dispatchers.IO) {
             _forecastWeatherHourly.postValue(weatherRepository.getWeatherForecastHourly())
         }

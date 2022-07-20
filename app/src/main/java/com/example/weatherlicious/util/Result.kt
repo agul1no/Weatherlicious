@@ -1,16 +1,12 @@
 package com.example.weatherlicious.util
 
-sealed class Result<out R> {
+sealed class Result<T>(
+    val data: T? = null,
+    val message: String? = null
+) {
 
-    data class Success<out T>(val data: T?) : Result<T>()
-    data class Error(val exception: Exception) : Result<Nothing>()
-    object Loading : Result<Nothing>()
+    class Success<T>(data: T) : Result<T>(data)
+    class Error<T>(message: String?, data: T? = null) : Result<T>(data, message)
+    class Loading<T> : Result<T>()
 
-    override fun toString(): String {
-        return when (this) {
-            is Success<*> -> "Success[data=$data]"
-            is Error -> "Error[exception=$exception]"
-            is Loading -> "Loading"
-        }
-    }
 }

@@ -3,7 +3,7 @@ package com.example.weatherlicious.data.model.forecastweather
 import com.example.weatherlicious.data.model.currentweather.Condition
 
 data class Hour(
-    val time_epoch: Int,
+    val time_epoch: Long,
     val time: String,
     val temp_c: Double,
     val temp_f: Double,

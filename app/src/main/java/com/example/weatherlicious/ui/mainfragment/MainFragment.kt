@@ -1,27 +1,32 @@
 package com.example.weatherlicious.ui.mainfragment
 
 import android.os.Bundle
-import android.util.Log
+import android.provider.CalendarContract
 import android.view.*
 import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherlicious.R
-import com.example.weatherlicious.data.model.currentweather.CurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
+import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.FragmentMainBinding
+import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHour
+import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHourMin
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
 @AndroidEntryPoint
 class MainFragment : Fragment() {
 
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
+
+    //private lateinit var adapter: ForecastWeatherHourlyAdapter
+    private lateinit var adapter: WeatherForecastAdapter
 
     private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
 
@@ -31,12 +36,33 @@ class MainFragment : Fragment() {
     ): View? {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
+        mainFragmentViewModel.getForecastWeatherHourly()
+        initializeRecyclerView(mainFragmentViewModel)
+
+        mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
+            //adapter.setData(response.body()?.forecast!!.forecastday)
+
+            val listOfHours = mutableListOf<Hour>()
+            var timeCounter = getTime().toInt()
+            var firstObject = 0
+            for (i in 0..23){
+                if (timeCounter == 23){
+                    listOfHours.add(response.body()?.forecast!!.forecastday[firstObject].hour[timeCounter])
+                    firstObject = 1
+                    timeCounter = 0
+                }
+                listOfHours.add(response.body()?.forecast!!.forecastday[firstObject].hour[timeCounter])
+                timeCounter++
+            }
+
+            //adapter.submitList(response.body()?.forecast!!.forecastday[0].hour)
+            adapter.submitList(listOfHours)
+
+        }
+
         hideWeatherImage()
-
         createMenuAddIcon()
-
         //observeCurrentWeather()
-
         observeForecastWeatherHourly()
 
         return binding.root
@@ -45,6 +71,17 @@ class MainFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    private fun initializeRecyclerView(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
+        //adapter = ForecastWeatherHourlyAdapter()
+        adapter = WeatherForecastAdapter()
+        binding.recyclerView.adapter = adapter
+        return binding.recyclerView
+    }
+
+    private fun getTime(): String {
+        return Calendar.getInstance().timeInMillis.timeFormatterHour()
     }
 
     private fun hideWeatherImage(){
@@ -108,14 +145,14 @@ class MainFragment : Fragment() {
     private fun observeForecastWeatherHourly() {
         mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
             if (response.isSuccessful){
-                bindDataForForecastWeatherHourly(response.body())
+                bindDataForForecastWeatherHourly(response.body()!!)
             }else{
                 binding.tvCityName.text = response.code().toString()
             }
         }
     }
 
-    private fun bindDataForForecastWeatherHourly(forecastWeather: ForecastWeather?){
+    private fun bindDataForForecastWeatherHourly(forecastWeather: ForecastWeather){
         binding.apply {
             collapsingToolbar.title = forecastWeather?.location!!.name
             tvCityName.text = forecastWeather.location.name
@@ -125,6 +162,7 @@ class MainFragment : Fragment() {
             tvWindKPH.text = "Wind:  ${forecastWeather.current.wind_kph.toInt()} Kph"
             tvMaxUndMinTemp.text = "${forecastWeather.forecast.forecastday[0].day.maxtemp_c.toInt()}° / ${forecastWeather.forecast.forecastday[0].day.mintemp_c.toInt()}°"
             tvConditionText.text = forecastWeather.current.condition.text
+
         }
     }
 

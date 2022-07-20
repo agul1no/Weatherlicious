@@ -3,7 +3,8 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id("dagger.hilt.android.plugin")
     id 'androidx.navigation.safeargs.kotlin'
-    id 'kotlin-android-extensions'
+    //id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
 }
 
 apply plugin: 'kotlin-kapt'
@@ -106,6 +107,10 @@ dependencies {
 
     //MP Android Dependency for the charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
+    // Glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
 
     // Navigation Components
     def nav_version = "2.5.0"
