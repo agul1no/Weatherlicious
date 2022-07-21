@@ -196,6 +196,32 @@
                 android:layout_marginEnd="10dp"
                 app:layout_constraintTop_toBottomOf="@+id/cardViewCurrentWeather" >
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/tvYesterday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Yesterday" />
+
+                    <TextView
+                        android:id="@+id/tvToday"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="14sp"
+                        app:layout_constraintStart_toStartOf="@+id/tvYesterday"
+                        app:layout_constraintTop_toBottomOf="@+id/tvYesterday"
+                        tools:text="Today" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView

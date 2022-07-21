@@ -1,5 +1,6 @@
 package com.example.weatherlicious.ui.mainfragment
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -38,9 +39,11 @@ class WeatherForecastAdapter : ListAdapter<Hour, WeatherForecastAdapter.ViewHold
                 tvTime.text = forecastWeatherHourly.time.dateToMillisHourMin().timeFormatterHourMin()
                 tvTemp.text = "${forecastWeatherHourly.temp_c.toInt()}°"
                 tvRainProbability.text = "${forecastWeatherHourly.chance_of_rain} %"
-                Glide.with(itemView).load(forecastWeatherHourly.condition.icon)
+                //val bitmap = BitmapFactory.decodeStream("https:${forecastWeatherHourly.condition.icon}")
+                //itemBinding.ivWeatherImage.setImageBitmap(bitmap)
+                Glide.with(itemView).load("https:${forecastWeatherHourly.condition.icon}")
                     .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                    .placeholder(R.mipmap.weatherlicious_logo)
+                    //.placeholder(R.mipmap.weatherlicious_logo)
                     .into(ivWeatherImage)
             }
         }

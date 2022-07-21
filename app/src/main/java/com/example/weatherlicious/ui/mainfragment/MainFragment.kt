@@ -108,9 +108,9 @@ class MainFragment : Fragment() {
             tvWindKPH.text = "Wind:  ${forecastWeather.current.wind_kph.toInt()} Kph"
             tvMaxUndMinTemp.text = "${forecastWeather.forecast.forecastday[0].day.maxtemp_c.toInt()}° / ${forecastWeather.forecast.forecastday[0].day.mintemp_c.toInt()}°"
             tvConditionText.text = forecastWeather.current.condition.text
-            Glide.with(context!!).load(forecastWeather.current.condition.icon)
+            Glide.with(context!!).load("https:${forecastWeather.current.condition.icon}")
                 .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                .placeholder(R.mipmap.weatherlicious_logo)
+                //.placeholder(R.mipmap.weatherlicious_logo)
                 .into(ivConditionIcon)
         }
     }
