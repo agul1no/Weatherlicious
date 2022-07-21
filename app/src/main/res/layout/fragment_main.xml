@@ -44,14 +44,13 @@
                 android:src="@mipmap/sunny_weather"
                 app:layout_collapseMode="parallax"
                 android:adjustViewBounds="true"
-                android:scaleType="centerCrop"
-                android:alpha="0.85">
+                android:scaleType="centerCrop">
             </ImageView>
 
             <View
                 android:id="@+id/gradient_bottom"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="200dp"
                 android:background="@drawable/gradient_bottom_image"
                 android:layout_gravity="bottom">
 
@@ -77,7 +76,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewCurrentWeather"
                 android:layout_width="match_parent"
-                android:layout_height="340dp"
+                android:layout_height="300dp"
                 app:cardCornerRadius="20dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
@@ -118,7 +117,6 @@
                         android:layout_height="70dp"
                         app:layout_constraintStart_toStartOf="@+id/tvDate"
                         app:layout_constraintTop_toBottomOf="@+id/tvDate"
-                        android:src="@mipmap/weatherlicious_logo"
                         tools:src="@mipmap/weatherlicious_logo"/>
 
                     <TextView
@@ -172,15 +170,17 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerView"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"
+                        android:layout_height="130dp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
                         android:orientation="horizontal"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/ivConditionIcon" />
+                        app:layout_constraintTop_toBottomOf="@+id/ivConditionIcon"
+                        tools:listitem="@layout/weather_hourly_recyclerview_item"/>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

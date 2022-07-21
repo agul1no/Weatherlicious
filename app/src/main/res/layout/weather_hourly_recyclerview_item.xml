@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="80dp"
-        android:layout_height="140dp"
+        android:layout_height="130dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -31,10 +31,9 @@
 
             <ImageView
                 android:id="@+id/ivWeatherImage"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginTop="10dp"
-                android:src="@mipmap/weatherlicious_logo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:alpha="0.9"
                 app:layout_constraintBottom_toTopOf="@+id/tvTemp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -46,7 +45,8 @@
                 android:id="@+id/tvTemp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14dp"
+                android:textSize="15sp"
+                android:textColor="?attr/colorOnSecondary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -58,13 +58,25 @@
                 android:id="@+id/tvRainProbability"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14dp"
+                android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvTemp"
                 tools:text="0 %" />
+
+            <ImageView
+                android:id="@+id/ivWaterDrop"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:src="@mipmap/water_drop"
+                android:alpha="0.4"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvRainProbability"
+                app:layout_constraintEnd_toStartOf="@+id/tvRainProbability"
+                app:layout_constraintTop_toTopOf="@+id/tvRainProbability" />
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

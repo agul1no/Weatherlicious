@@ -11,7 +11,7 @@ class DateFormatter {
 
         private const val DATE_FORMAT = "dd-MM-yyyy"
         private const val DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss"
-        private const val DATE_AND_TIME_HOUR_MIN_FORMAT = "yyyy.MM.dd HH:mm"
+        private const val DATE_AND_TIME_HOUR_MIN_FORMAT = "yyyy-MM-dd HH:mm"
         private const val TIME_FORMAT_HOURS_MINUTES_SECONDS = "HH:mm:ss"
         private const val TIME_FORMAT_HOURS_MINUTES = "HH:mm"
         private const val TIME_FORMAT_MINUTES_SECONDS = "mm:ss"

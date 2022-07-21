@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.weatherlicious.R
 import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
@@ -32,20 +35,13 @@ class WeatherForecastAdapter : ListAdapter<Hour, WeatherForecastAdapter.ViewHold
 
         fun bind(forecastWeatherHourly: Hour){
             itemBinding.apply {
-                //tvTime.text = forecastWeather.forecast.forecastday[0].hour[0].time
-                tvTime.text = forecastWeatherHourly.time//.dateToMillisHourMin().timeFormatterHourMin()
-                //tvTime.text = forecastDay.hour[positionHour].time //.dateToMillis().timeFormatterHourMin()
-
-                //Glide.with(itemView).load(forecastWeather.forecast.forecastday[0].hour[0].condition.icon).centerCrop().transition(DrawableTransitionOptions.withCrossFade()).into(ivWeatherImage)
-                //Glide.with(itemView).load(forecastDay.hour[0].condition.icon).centerCrop().transition(DrawableTransitionOptions.withCrossFade()).into(ivWeatherImage)
-
-                //tvTemp.text = forecastWeather.forecast.forecastday[0].hour[0].temp_c.toString()
-                tvTemp.text = "${forecastWeatherHourly.temp_c.toInt()} °"
-                //tvTemp.text = "${forecastDay.hour[positionHour].temp_c.toInt()}°"
-
-                //tvRainProbability.text = "${forecastWeather.forecast.forecastday[0].hour[0].chance_of_rain} %"
+                tvTime.text = forecastWeatherHourly.time.dateToMillisHourMin().timeFormatterHourMin()
+                tvTemp.text = "${forecastWeatherHourly.temp_c.toInt()}°"
                 tvRainProbability.text = "${forecastWeatherHourly.chance_of_rain} %"
-                //tvRainProbability.text = "${forecastDay.hour[positionHour].chance_of_rain} %"
+                Glide.with(itemView).load(forecastWeatherHourly.condition.icon)
+                    .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
+                    .placeholder(R.mipmap.weatherlicious_logo)
+                    .into(ivWeatherImage)
             }
         }
     }
@@ -62,6 +58,4 @@ class WeatherForecastAdapter : ListAdapter<Hour, WeatherForecastAdapter.ViewHold
             return oldItem == newItem
         }
     }
-
-
 }
