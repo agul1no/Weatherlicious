@@ -1,6 +1,5 @@
 package com.example.weatherlicious.ui.mainfragment
 
-import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -8,16 +7,12 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.weatherlicious.R
-import com.example.weatherlicious.data.model.forecastweather.ForecastDay
-import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.WeatherHourlyRecyclerviewItemBinding
-import com.example.weatherlicious.util.DateFormatter.Companion.dateToMillis
 import com.example.weatherlicious.util.DateFormatter.Companion.dateToMillisHourMin
 import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHourMin
 
-class WeatherForecastAdapter : ListAdapter<Hour, WeatherForecastAdapter.ViewHolder>(WeatherForecastDiffCallBack()) {
+class WeatherForecastAdapterHourly : ListAdapter<Hour, WeatherForecastAdapterHourly.ViewHolder>(WeatherForecastDiffCallBack()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = WeatherHourlyRecyclerviewItemBinding

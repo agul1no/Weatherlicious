@@ -1,9 +1,9 @@
 package com.example.weatherlicious.ui.mainfragment
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -11,10 +11,13 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.weatherlicious.util.NestedScrollViewListener
 import com.example.weatherlicious.R
+import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.FragmentMainBinding
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateLikeAPIResponse
 import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHour
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,7 +31,8 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     //private lateinit var adapter: ForecastWeatherHourlyAdapter
-    private lateinit var adapter: WeatherForecastAdapter
+    private lateinit var adapterHourly: WeatherForecastAdapterHourly
+    private lateinit var adapterDaily: WeatherForecastAdapterDaily
 
     private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
 
@@ -39,14 +43,23 @@ class MainFragment : Fragment() {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
         mainFragmentViewModel.getForecastWeatherHourly()
-        initializeRecyclerView(mainFragmentViewModel)
+        mainFragmentViewModel.getForecastWeatherDaily()
+        initializeRecyclerViewHourly(mainFragmentViewModel)
+        initializeRecyclerViewDaily(mainFragmentViewModel)
 
         hideWeatherImage()
-        createMenuAddIcon()
         observeCurrentWeather()
         observeForecastWeatherHourly()
-
+        observeForecastWeatherDaily()
+        //listenNestedScroll(mainFragmentViewModel, context!!)
+        setToolbarItemListener()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mainFragmentViewModel.getForecastWeatherHourly()
+        mainFragmentViewModel.getForecastWeatherDaily()
     }
 
     override fun onDestroy() {
@@ -54,11 +67,17 @@ class MainFragment : Fragment() {
         _binding = null
     }
 
-    private fun initializeRecyclerView(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
+    private fun initializeRecyclerViewHourly(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
         //adapter = ForecastWeatherHourlyAdapter()
-        adapter = WeatherForecastAdapter()
-        binding.recyclerView.adapter = adapter
-        return binding.recyclerView
+        adapterHourly = WeatherForecastAdapterHourly()
+        binding.recyclerViewHourly.adapter = adapterHourly
+        return binding.recyclerViewHourly
+    }
+
+    private fun initializeRecyclerViewDaily(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
+        adapterDaily = WeatherForecastAdapterDaily()
+        binding.recyclerViewDaily.adapter = adapterDaily
+        return binding.recyclerViewDaily
     }
 
     private fun hideWeatherImage(){
@@ -74,24 +93,11 @@ class MainFragment : Fragment() {
         })
     }
 
-    private fun createMenuAddIcon(){
-        activity?.addMenuProvider(object: MenuProvider{
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.add_menu_main_fragment, menu)
-            }
-
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-                return true
-            }
-
-        },) //viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
     private fun observeCurrentWeather() {
         mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
             if (response.isSuccessful){
                 bindDataForForecastWeatherHourly(response.body()!!)
+                bindExtraCurrentWeatherData(response.body()!!)
             }else{
                 binding.tvCityName.text = response.code().toString()
             }
@@ -118,7 +124,7 @@ class MainFragment : Fragment() {
     private fun observeForecastWeatherHourly(){
         mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
             val listOfHours = createListOfForecastWeatherHourly(response)
-            adapter.submitList(listOfHours)
+            adapterHourly.submitList(listOfHours)
         }
     }
 
@@ -162,9 +168,61 @@ class MainFragment : Fragment() {
         }
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        //super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.add_menu_main_fragment, menu)
-//    }
+    private fun observeForecastWeatherDaily(){
+        mainFragmentViewModel.forecastWeatherDaily.observe(viewLifecycleOwner) { response ->
+            val listOfDays = createListOfForecastWeatherDaily(response)
+            adapterDaily.submitList(listOfDays)
+        }
+    }
+
+    private fun createListOfForecastWeatherDaily(response: Response<ForecastWeather>): List<ForecastDay>{
+        val listOfDays = mutableListOf<ForecastDay>()
+        for (i in 0..2){
+            listOfDays.add(response.body()?.forecast!!.forecastday[i])
+        }
+        return listOfDays
+    }
+
+    private fun bindExtraCurrentWeatherData(forecastWeather: ForecastWeather){
+        binding.apply {
+            tvUVValue.text = categorizeUVValue(forecastWeather.forecast.forecastday[0].day.uv)
+        }
+    }
+
+    private fun categorizeUVValue(uv: Double): String{
+        return when(uv){
+            in 0.0..2.99 -> "Low"
+            in 3.0..5.99 -> "Medium"
+            in 6.0..7.99 -> "High"
+            in 8.0..10.99 -> "Very High"
+            in 11.0..100.0 -> "Extremely High"
+            else -> "Data couldn't be called"
+        }
+    }
+
+
+
+    private fun listenNestedScroll(mainFragmentViewModel: MainFragmentViewModel, context: Context){
+        val transitionListener = NestedScrollViewListener(mainFragmentViewModel, context)
+        binding.nestedScrollView.setOnScrollChangeListener(transitionListener)
+    }
+
+    private fun setToolbarItemListener(){
+        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+            navigateToAddFragment(menuItem)
+        }
+    }
+
+    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
+        when (menuItem.itemId) {
+            R.id.action_add -> {
+                // Navigate to add screen
+                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
+                return true
+            }
+
+            else -> return false
+        }
+    }
 
 }

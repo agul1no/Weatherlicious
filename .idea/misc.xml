@@ -5,10 +5,13 @@
       <map>
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/drawable-v24/gradient_bottom_image.xml" value="0.327" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/drawable-v24/ic_search.xml" value="0.219" />
+        <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/drawable/gradient_toolbar.xml" value="0.259" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/drawable/ic_add.xml" value="0.327" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/activity_main.xml" value="0.4171875" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/fragment_add.xml" value="0.4171875" />
-        <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/fragment_main.xml" value="0.4171875" />
+        <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/fragment_main.xml" value="0.264" />
+        <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/weather_daily_recycle_view_item.xml" value="0.4171875" />
+        <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/weather_dayly_recycle_view_item.xml" value="0.4" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/layout/weather_hourly_recyclerview_item.xml" value="0.72" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/menu/add_menu_main_fragment.xml" value="0.4161458333333333" />
         <entry key="..\:/Users/Acer R2G/AndroidStudioProjects/Weatherlicious/app/src/main/res/menu/search_menu_add_fragment.xml" value="0.4171875" />

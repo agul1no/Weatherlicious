@@ -40,4 +40,10 @@ class MainFragmentViewModel @Inject constructor(
         }
     }
 
+    fun getForecastWeatherDaily(){
+    viewModelScope.launch (Dispatchers.IO) {
+        _forecastWeatherDaily.postValue(weatherRepository.getWeatherForecastDaily())
+    }
+    }
+
 }

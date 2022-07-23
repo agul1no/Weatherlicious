@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tvDayOfTheWeek"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:textSize="14sp"
+        android:textColor="?attr/colorOnSecondary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Today" />
+
+    <ImageView
+        android:id="@+id/ivWaterDrop"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:alpha="0.4"
+        android:src="@mipmap/water_drop"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDayOfTheWeek"
+        app:layout_constraintEnd_toStartOf="@+id/tvChanceOfRain"
+        app:layout_constraintStart_toStartOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/tvDayOfTheWeek" />
+
+    <TextView
+        android:id="@+id/tvChanceOfRain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDayOfTheWeek"
+        app:layout_constraintStart_toEndOf="@+id/ivWaterDrop"
+        app:layout_constraintTop_toTopOf="@+id/tvDayOfTheWeek"
+        tools:text="0 %" />
+
+    <ImageView
+        android:id="@+id/ivWeatherDay"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:alpha="0.9"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDayOfTheWeek"
+        app:layout_constraintEnd_toStartOf="@+id/ivWeatherNight"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/tvDayOfTheWeek"
+        tools:src="@mipmap/weatherlicious_logo" />
+
+    <ImageView
+        android:id="@+id/ivWeatherNight"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:alpha="0.9"
+        android:layout_marginStart="5dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDayOfTheWeek"
+        app:layout_constraintStart_toEndOf="@+id/ivWeatherDay"
+        app:layout_constraintTop_toTopOf="@+id/tvDayOfTheWeek"
+        tools:src="@mipmap/weatherlicious_logo" />
+
+    <TextView
+        android:id="@+id/tvMaxUndMinTemp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:textColor="?attr/colorOnSecondary"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tvDayOfTheWeek"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/ivWeatherNight"
+        app:layout_constraintTop_toTopOf="@+id/tvDayOfTheWeek"
+        tools:text="26° / 13°" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="120dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="200dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

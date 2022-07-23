@@ -60,9 +60,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/tvTemp"
+                app:layout_constraintStart_toEndOf="@+id/ivWaterDrop"
                 app:layout_constraintTop_toBottomOf="@+id/tvTemp"
                 tools:text="0 %" />
 
@@ -70,11 +69,12 @@
                 android:id="@+id/ivWaterDrop"
                 android:layout_width="12dp"
                 android:layout_height="12dp"
-                android:src="@mipmap/water_drop"
+                android:layout_marginEnd="4dp"
                 android:alpha="0.4"
-                android:layout_marginEnd="5dp"
+                android:src="@mipmap/water_drop"
                 app:layout_constraintBottom_toBottomOf="@+id/tvRainProbability"
                 app:layout_constraintEnd_toStartOf="@+id/tvRainProbability"
+                app:layout_constraintStart_toStartOf="@+id/tvTemp"
                 app:layout_constraintTop_toTopOf="@+id/tvRainProbability" />
 
 

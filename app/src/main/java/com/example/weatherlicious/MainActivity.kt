@@ -3,7 +3,9 @@ package com.example.weatherlicious
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsets
 import androidx.annotation.RequiresApi
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
     private fun configureAppBar(navController: NavController): AppBarConfiguration{
         appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
         // Add the id of the fragment where you don't need the back arrow
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment))
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment, R.id.addFragment))
         setupActionBarWithNavController(navController, appBarConfiguration)
         return appBarConfiguration
     }
@@ -69,10 +71,14 @@ class MainActivity : AppCompatActivity() {
         when(navDestination?.id){
             R.id.mainFragment -> { finish() }
 //            R.id.splashFragment -> { finish() }
-//            R.id.viewPagerScoreFragment -> { super.onBackPressed() }
+            R.id.addFragment -> { super.onBackPressed() }
 //            R.id.gameFragment -> { super.onBackPressed() }
 //            R.id.afterGameFragment -> { super.onBackPressed() }
         }
 
     }
+
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//        return super.onOptionsItemSelected(item)
+//    }
 }

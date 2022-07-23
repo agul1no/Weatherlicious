@@ -12,4 +12,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
     <color name="blue">#183378</color>
+    <color name="blue_sky">#87CEEB</color>
+    <color name="blue_indigo">#2572D3</color>
 </resources>

@@ -1,11 +1,13 @@
 package com.example.weatherlicious.ui.addfragment
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.weatherlicious.R
 import com.example.weatherlicious.databinding.FragmentAddBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,6 +37,7 @@ class AddFragment : Fragment() {
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 val searchView = menuItem.actionView as SearchView
 
+
                 searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                     override fun onQueryTextSubmit(query: String?): Boolean {
                         //addFragmentViewModel.checkQueryIsEmpty(query, searchView)
@@ -50,7 +53,7 @@ class AddFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
 
         inflater.inflate(R.menu.search_menu_add_fragment, menu)
@@ -67,7 +70,7 @@ class AddFragment : Fragment() {
                 return true
             }
         })
-    }
+    }*/
 
     //this method should be implemented in the AddFragmentViewModel
     private fun checkQueryIsEmpty(query: String?, searchView: SearchView){

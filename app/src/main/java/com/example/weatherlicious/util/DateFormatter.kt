@@ -10,6 +10,7 @@ class DateFormatter {
     companion object{
 
         private const val DATE_FORMAT = "dd-MM-yyyy"
+        private const val DATE_FORMAT_API = "yyyy-MM-dd"
         private const val DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss"
         private const val DATE_AND_TIME_HOUR_MIN_FORMAT = "yyyy-MM-dd HH:mm"
         private const val TIME_FORMAT_HOURS_MINUTES_SECONDS = "HH:mm:ss"
@@ -19,6 +20,11 @@ class DateFormatter {
 
         fun Long.millisToDate(): String{
             val formatter = SimpleDateFormat(DATE_FORMAT)
+            return formatter.format(this)
+        }
+
+        fun Long.millisToDateLikeAPIResponse(): String{
+            val formatter = SimpleDateFormat(DATE_FORMAT_API)
             return formatter.format(this)
         }
 
