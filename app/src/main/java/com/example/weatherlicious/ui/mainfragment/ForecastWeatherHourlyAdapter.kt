@@ -3,11 +3,8 @@ package com.example.weatherlicious.ui.mainfragment
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.databinding.WeatherHourlyRecyclerviewItemBinding
-import com.example.weatherlicious.util.DateFormatter.Companion.dateToMillis
-import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHourMin
 
 class ForecastWeatherHourlyAdapter(): RecyclerView.Adapter<ForecastWeatherHourlyAdapter.ViewHolder>() {
 

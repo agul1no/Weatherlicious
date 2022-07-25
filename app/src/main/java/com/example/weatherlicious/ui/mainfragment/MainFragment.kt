@@ -17,8 +17,11 @@ import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.FragmentMainBinding
-import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateLikeAPIResponse
-import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHour
+import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYear
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMinSec
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Response
@@ -108,7 +111,7 @@ class MainFragment : Fragment() {
         binding.apply {
             collapsingToolbar.title = forecastWeather?.location!!.name
             tvCityName.text = forecastWeather.location.name
-            tvDate.text = forecastWeather.location.localtime
+            tvDate.text = forecastWeather.location.localtime.dateYearMonthDayHourMinToMillis().millisToDateDayMonthYearHourMin()
             tvTemperature.text = "${forecastWeather.current.temp_c.toInt()}°"
             tvFeelsLike.text = "Feelslike:  ${forecastWeather.current.feelslike_c.toInt()}°"
             tvWindKPH.text = "Wind:  ${forecastWeather.current.wind_kph.toInt()} Kph"
@@ -145,7 +148,7 @@ class MainFragment : Fragment() {
     }
 
     private fun getTime(): String {
-        return Calendar.getInstance().timeInMillis.timeFormatterHour()
+        return Calendar.getInstance().timeInMillis.millisToHour()
     }
 
     private fun editDependOnLightOrDarkTheme(percent: Float){

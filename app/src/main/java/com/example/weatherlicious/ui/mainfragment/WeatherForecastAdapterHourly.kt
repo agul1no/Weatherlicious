@@ -9,8 +9,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.WeatherHourlyRecyclerviewItemBinding
-import com.example.weatherlicious.util.DateFormatter.Companion.dateToMillisHourMin
-import com.example.weatherlicious.util.DateFormatter.Companion.timeFormatterHourMin
+import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToHourMin
 
 class WeatherForecastAdapterHourly : ListAdapter<Hour, WeatherForecastAdapterHourly.ViewHolder>(WeatherForecastDiffCallBack()) {
 
@@ -31,7 +31,7 @@ class WeatherForecastAdapterHourly : ListAdapter<Hour, WeatherForecastAdapterHou
 
         fun bind(forecastWeatherHourly: Hour){
             itemBinding.apply {
-                tvTime.text = forecastWeatherHourly.time.dateToMillisHourMin().timeFormatterHourMin()
+                tvTime.text = forecastWeatherHourly.time.dateYearMonthDayHourMinToMillis().millisToHourMin()
                 tvTemp.text = "${forecastWeatherHourly.temp_c.toInt()}°"
                 tvRainProbability.text = "${forecastWeatherHourly.chance_of_rain} %"
                 //val bitmap = BitmapFactory.decodeStream("https:${forecastWeatherHourly.condition.icon}")
