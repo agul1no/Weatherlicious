@@ -18,10 +18,10 @@ import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
-import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYear
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
-import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMinSec
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
+import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.categorizeUVValue
+import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.transformWindDirectionResponse
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Response
@@ -100,7 +100,7 @@ class MainFragment : Fragment() {
         mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
             if (response.isSuccessful){
                 bindDataForForecastWeatherHourly(response.body()!!)
-                bindExtraCurrentWeatherData(response.body()!!)
+                bindCurrentWeatherExtraData(response.body()!!)
             }else{
                 binding.tvCityName.text = response.code().toString()
             }
@@ -186,24 +186,15 @@ class MainFragment : Fragment() {
         return listOfDays
     }
 
-    private fun bindExtraCurrentWeatherData(forecastWeather: ForecastWeather){
+    private fun bindCurrentWeatherExtraData(forecastWeather: ForecastWeather){
         binding.apply {
             tvUVValue.text = categorizeUVValue(forecastWeather.forecast.forecastday[0].day.uv)
+            tvSunriseTime.text = forecastWeather.forecast.forecastday[0].astro.sunrise
+            tvSunsetTime.text = forecastWeather.forecast.forecastday[0].astro.sunset
+            tvWindValue.text = transformWindDirectionResponse(forecastWeather.current.wind_dir)
+            tvHumidityValue.text = "${forecastWeather.current.humidity} %"
         }
     }
-
-    private fun categorizeUVValue(uv: Double): String{
-        return when(uv){
-            in 0.0..2.99 -> "Low"
-            in 3.0..5.99 -> "Medium"
-            in 6.0..7.99 -> "High"
-            in 8.0..10.99 -> "Very High"
-            in 11.0..100.0 -> "Extremely High"
-            else -> "Data couldn't be called"
-        }
-    }
-
-
 
     private fun listenNestedScroll(mainFragmentViewModel: MainFragmentViewModel, context: Context){
         val transitionListener = NestedScrollViewListener(mainFragmentViewModel, context)
