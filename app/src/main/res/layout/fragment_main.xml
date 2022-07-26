@@ -27,7 +27,6 @@
             app:expandedTitleTextColor="@color/white"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:menu="@menu/add_menu_main_fragment"
-
             app:titleCollapseMode="fade">
 
             <androidx.appcompat.widget.Toolbar
@@ -72,7 +71,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingBottom="50dp">
 
             <androidx.cardview.widget.CardView
@@ -215,116 +214,6 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvYesterday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:layout_marginStart="20dp"-->
-<!--                        android:layout_marginTop="20dp"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="parent"-->
-<!--                        app:layout_constraintTop_toTopOf="parent"-->
-<!--                        tools:text="Yesterday" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvYesterday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvYesterday"-->
-<!--                        tools:text="Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvOneDayAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvToday"-->
-<!--                        tools:text="One Day After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvTwoDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvOneDayAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvOneDayAfterToday"-->
-<!--                        tools:text="Two Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvThreeDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvTwoDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvTwoDaysAfterToday"-->
-<!--                        tools:text="Three Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvFourDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvThreeDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvThreeDaysAfterToday"-->
-<!--                        tools:text="Four Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvFiveDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvFourDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvFourDaysAfterToday"-->
-<!--                        tools:text="Five Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvSixDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvFiveDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvFiveDaysAfterToday"-->
-<!--                        tools:text="Six Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvSevenDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvSixDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvSixDaysAfterToday"-->
-<!--                        tools:text="Seven Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvEightDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvSevenDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvSevenDaysAfterToday"-->
-<!--                        tools:text="Eight Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvNineDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvEightDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvEightDaysAfterToday"-->
-<!--                        tools:text="Nine Days After Today" />-->
-
-<!--                    <TextView-->
-<!--                        android:id="@+id/tvTenDaysAfterToday"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="wrap_content"-->
-<!--                        android:textSize="14sp"-->
-<!--                        app:layout_constraintStart_toStartOf="@+id/tvNineDaysAfterToday"-->
-<!--                        app:layout_constraintTop_toBottomOf="@+id/tvNineDaysAfterToday"-->
-<!--                        tools:text="Ten Days After Today" />-->
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -332,12 +221,15 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:layout_marginStart="10dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
                 app:cardCornerRadius="20dp"
-                app:layout_constraintTop_toBottomOf="@id/cardViewForecast">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardViewForecast"
+                tools:layout_editor_absoluteX="10dp">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -358,8 +250,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
-                        android:textSize="18sp"
                         android:text="UV-Index"
+                        android:textSize="18sp"
                         app:layout_constraintBottom_toBottomOf="@+id/ivUVSun"
                         app:layout_constraintStart_toEndOf="@+id/ivUVSun"
                         app:layout_constraintTop_toTopOf="@+id/ivUVSun"
@@ -369,21 +261,21 @@
                         android:id="@+id/tvUVValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvUVIndex"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvUVIndex"
-                        android:layout_marginEnd="20dp"
                         tools:text="Low" />
 
                     <View
                         android:id="@+id/dividerLine"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey"
-                        android:layout_marginTop="15dp"
                         android:layout_marginStart="60dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginEnd="60dp"
+                        android:background="@color/light_grey"
                         app:layout_constraintTop_toBottomOf="@+id/ivUVSun" />
 
                     <androidx.constraintlayout.widget.Guideline
@@ -397,8 +289,8 @@
                         android:id="@+id/ivSunrise"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
                         android:src="@mipmap/sunrise_transparent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dividerLine" />
@@ -407,9 +299,9 @@
                         android:id="@+id/tvSunrise"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="Sunrise"
                         android:textSize="18sp"
-                        android:layout_marginStart="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/ivSunrise"
                         app:layout_constraintStart_toEndOf="@+id/ivSunrise"
                         app:layout_constraintTop_toTopOf="@+id/ivSunrise" />
@@ -418,29 +310,29 @@
                         android:id="@+id/tvSunriseTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvSunrise"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvSunrise"
-                        android:layout_marginEnd="20dp"
                         tools:text="5:13 AM" />
 
                     <View
                         android:id="@+id/dividerLine2"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey"
-                        android:layout_marginTop="15dp"
                         android:layout_marginStart="60dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginEnd="60dp"
+                        android:background="@color/light_grey"
                         app:layout_constraintTop_toBottomOf="@+id/ivSunrise" />
 
                     <ImageView
                         android:id="@+id/ivSunset"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
                         android:src="@mipmap/sunset_transparent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dividerLine2" />
@@ -449,40 +341,40 @@
                         android:id="@+id/tvSunset"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="Sunset"
                         android:textSize="18sp"
-                        android:layout_marginStart="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/ivSunset"
                         app:layout_constraintStart_toEndOf="@+id/ivSunset"
-                        app:layout_constraintTop_toTopOf="@+id/ivSunset"/>
+                        app:layout_constraintTop_toTopOf="@+id/ivSunset" />
 
                     <TextView
                         android:id="@+id/tvSunsetTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvSunset"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvSunset"
-                        android:layout_marginEnd="20dp"
                         tools:text="21:07 PM" />
 
                     <View
                         android:id="@+id/dividerLine3"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey"
-                        android:layout_marginTop="15dp"
                         android:layout_marginStart="60dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginEnd="60dp"
+                        android:background="@color/light_grey"
                         app:layout_constraintTop_toBottomOf="@+id/ivSunset" />
 
                     <ImageView
                         android:id="@+id/ivWind"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
+                        android:layout_marginTop="20dp"
                         android:src="@mipmap/wind_transparent_grey"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dividerLine3" />
@@ -491,42 +383,44 @@
                         android:id="@+id/tvWind"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="Wind Direction"
                         android:textSize="18sp"
-                        android:layout_marginStart="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/ivWind"
                         app:layout_constraintStart_toEndOf="@+id/ivWind"
-                        app:layout_constraintTop_toTopOf="@+id/ivWind"/>
+                        app:layout_constraintTop_toTopOf="@+id/ivWind" />
 
                     <TextView
                         android:id="@+id/tvWindValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvWind"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvWind"
-                        android:layout_marginEnd="20dp"
                         tools:text="18 Kmh" />
 
                     <View
                         android:id="@+id/dividerLine4"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/light_grey"
-                        android:layout_marginTop="15dp"
                         android:layout_marginStart="60dp"
+                        android:layout_marginTop="15dp"
                         android:layout_marginEnd="60dp"
+                        android:background="@color/light_grey"
                         app:layout_constraintTop_toBottomOf="@+id/ivWind" />
 
                     <ImageView
                         android:id="@+id/ivHumidity"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
-                        android:src="@mipmap/water_drop"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginBottom="20dp"
                         android:alpha="0.7"
+                        android:src="@mipmap/water_drop"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/dividerLine4" />
 
@@ -534,36 +428,27 @@
                         android:id="@+id/tvHumidity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
                         android:text="Humidity"
                         android:textSize="18sp"
-                        android:layout_marginStart="10dp"
                         app:layout_constraintBottom_toBottomOf="@+id/ivHumidity"
                         app:layout_constraintStart_toEndOf="@+id/ivHumidity"
-                        app:layout_constraintTop_toTopOf="@+id/ivHumidity"/>
+                        app:layout_constraintTop_toTopOf="@+id/ivHumidity" />
 
                     <TextView
                         android:id="@+id/tvHumidityValue"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:textSize="16sp"
                         app:layout_constraintBottom_toBottomOf="@+id/tvHumidity"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="@+id/tvHumidity"
-                        android:layout_marginEnd="20dp"
                         tools:text="56 %" />
-
-                    <View
-                        android:id="@+id/dividerLine5"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/light_grey"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginStart="60dp"
-                        android:layout_marginEnd="60dp"
-                        app:layout_constraintTop_toBottomOf="@+id/ivHumidity" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.cardview.widget.CardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

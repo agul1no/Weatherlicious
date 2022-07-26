@@ -92,7 +92,7 @@ class MainFragment : Fragment() {
                 (Math.abs(verticalOffset)).toFloat() / appBarLayout?.totalScrollRange!! // 0F to 1F
             // Control container opacity according to offset
             binding.ivCurrentWeather.alpha = 0.8F - percent
-            editDependOnLightOrDarkTheme(percent)
+            editAppbarImageOnLightOrDarkTheme(percent)
         })
     }
 
@@ -151,7 +151,7 @@ class MainFragment : Fragment() {
         return Calendar.getInstance().timeInMillis.millisToHour()
     }
 
-    private fun editDependOnLightOrDarkTheme(percent: Float){
+    private fun editAppbarImageOnLightOrDarkTheme(percent: Float){
         when (context?.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
             Configuration.UI_MODE_NIGHT_YES -> {
                 binding.gradientBottom.visibility = View.VISIBLE
@@ -208,14 +208,14 @@ class MainFragment : Fragment() {
     }
 
     private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
-        when (menuItem.itemId) {
+        return when (menuItem.itemId) {
             R.id.action_add -> {
                 // Navigate to add screen
                 findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-                return true
+                true
             }
 
-            else -> return false
+            else -> false
         }
     }
 
