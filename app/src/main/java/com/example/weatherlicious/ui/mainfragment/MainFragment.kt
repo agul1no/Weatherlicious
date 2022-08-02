@@ -1,7 +1,8 @@
 package com.example.weatherlicious.ui.mainfragment
 
-import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.isVisible
@@ -9,9 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.weatherlicious.util.NestedScrollViewListener
 import com.example.weatherlicious.R
 import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
@@ -56,6 +59,7 @@ class MainFragment : Fragment() {
         observeForecastWeatherDaily()
         //listenNestedScroll(mainFragmentViewModel, context!!)
         setToolbarItemListener()
+
         return binding.root
     }
 
@@ -63,6 +67,7 @@ class MainFragment : Fragment() {
         super.onResume()
         mainFragmentViewModel.getForecastWeatherHourly()
         mainFragmentViewModel.getForecastWeatherDaily()
+        mainFragmentViewModel.transformNetworkForecastWeatherIntoLocalCurrentWeather(context!!)
     }
 
     override fun onDestroy() {
@@ -194,11 +199,6 @@ class MainFragment : Fragment() {
             tvWindValue.text = transformWindDirectionResponse(forecastWeather.current.wind_dir)
             tvHumidityValue.text = "${forecastWeather.current.humidity} %"
         }
-    }
-
-    private fun listenNestedScroll(mainFragmentViewModel: MainFragmentViewModel, context: Context){
-        val transitionListener = NestedScrollViewListener(mainFragmentViewModel, context)
-        binding.nestedScrollView.setOnScrollChangeListener(transitionListener)
     }
 
     private fun setToolbarItemListener(){

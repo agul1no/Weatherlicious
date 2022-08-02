@@ -1,5 +1,8 @@
 package com.example.weatherlicious.di.module
 
+import android.app.Application
+import android.content.Context
+import com.example.weatherlicious.data.source.local.WeatherDatabase
 import com.example.weatherlicious.data.source.local.WeatherLocal
 import com.example.weatherlicious.data.source.local.WeatherLocalImpl
 import com.example.weatherlicious.data.source.remote.WeatherRemote
@@ -36,8 +39,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideLocalRepository(): WeatherLocal{
-        return WeatherLocalImpl()
+    fun provideLocalRepository(weatherDatabase: WeatherDatabase): WeatherLocal{
+        return WeatherLocalImpl(weatherDatabase)
     }
 
     @Provides
