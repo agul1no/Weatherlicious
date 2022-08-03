@@ -10,8 +10,9 @@ data class LocalCurrentWeather(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
     val cityName: String,
-    val timeStamp: String,
+    val date: String,
     val icon: Bitmap, //TypeConverters
+    val temperature: String,
     val condition: String,
     val wind: String,
     val maxAndMinTemp: String,
