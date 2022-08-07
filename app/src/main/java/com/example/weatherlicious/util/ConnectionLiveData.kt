@@ -8,7 +8,7 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 
-class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
+class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
 
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -39,24 +39,11 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
          */
         override fun onAvailable(network: Network) {
-            //Log.d(TAG, "onAvailable: ${network}")
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             //Log.d(TAG, "onAvailable: ${network}, $hasInternetCapability")
             if (hasInternetCapability == true) {
                 validNetworks.add(network)
-
-                // check if this network actually has internet
-//                CoroutineScope(Dispatchers.IO).launch {
-//                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
-//                    if (hasInternet) {
-//                        withContext(Dispatchers.Main) {
-//                            //Log.d(TAG, "onAvailable: adding network. ${network}")
-//                            validNetworks.add(network)
-//                            checkValidNetworks()
-//                        }
-//                    }
-//                }
             }
             checkValidNetworks()
         }
@@ -66,11 +53,9 @@ class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
          */
         override fun onLost(network: Network) {
-            //Log.d(TAG, "onLost: ${network}")
             validNetworks.remove(network)
             checkValidNetworks()
         }
-
     }
 
 }

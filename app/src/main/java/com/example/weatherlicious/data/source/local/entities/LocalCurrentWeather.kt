@@ -11,7 +11,7 @@ data class LocalCurrentWeather(
     val id: Long,
     val cityName: String,
     val date: String,
-    val icon: Bitmap, //TypeConverters
+    val icon: Bitmap,
     val temperature: String,
     val condition: String,
     val wind: String,

@@ -1,8 +1,15 @@
 package com.example.weatherlicious.ui.mainfragment
 
+import android.content.Context
 import android.content.res.Configuration
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -18,11 +25,11 @@ import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.example.weatherlicious.util.ConnectionLiveData
+import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.categorizeUVValue
+import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.transformWindDirectionResponse
 import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
-import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.categorizeUVValue
-import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.transformWindDirectionResponse
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Response
@@ -47,29 +54,10 @@ class MainFragment : Fragment() {
     ): View? {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
 
-        initializeRecyclerViewHourly(mainFragmentViewModel)
-        initializeRecyclerViewDaily(mainFragmentViewModel)
-
-//        connectionLiveData = ConnectionLiveData(context!!)
-//        connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
-//            if (isNetworkAvailable) {
-//                mainFragmentViewModel.getRemoteForecastWeatherHourly()
-//                mainFragmentViewModel.getRemoteForecastWeatherDaily()
-//                mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
-//                observeRemoteCurrentWeather()
-//                observeRemoteForecastWeatherHourly()
-//                observeRemoteForecastWeatherDaily()
-//                Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
-//
-//            } else {
-//                mainFragmentViewModel.getLocalCurrentWeather()
-//                observeLocalCurrentWeather()
-//                Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
-//            }
-//        }
+        initializeRecyclerViewHourly()
+        initializeRecyclerViewDaily()
 
         hideWeatherImage()
-
         setToolbarItemListener()
 
         return binding.root
@@ -77,12 +65,21 @@ class MainFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+
+        if(!isNetworkAvailable(context)){
+            mainFragmentViewModel.getLocalCurrentWeather()
+            mainFragmentViewModel.getLocalForecastWeatherHourly()
+            observeLocalCurrentWeather()
+            observeLocalForecastWeatherHourly()
+            Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
+        }
         connectionLiveData = ConnectionLiveData(context!!)
         connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
             if (isNetworkAvailable) {
                 mainFragmentViewModel.getRemoteForecastWeatherHourly()
                 mainFragmentViewModel.getRemoteForecastWeatherDaily()
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
+                mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
                 observeRemoteCurrentWeather()
                 observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
@@ -90,7 +87,9 @@ class MainFragment : Fragment() {
 
             } else {
                 mainFragmentViewModel.getLocalCurrentWeather()
+                mainFragmentViewModel.getLocalForecastWeatherHourly()
                 observeLocalCurrentWeather()
+                observeLocalForecastWeatherHourly()
                 Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
             }
         }
@@ -101,14 +100,41 @@ class MainFragment : Fragment() {
         _binding = null
     }
 
-    private fun initializeRecyclerViewHourly(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
+    private fun isNetworkAvailable(context: Context?): Boolean {
+        if (context == null) return false
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                when {
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                        return true
+                    }
+                    capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                        return true
+                    }
+                }
+            }
+        } else {
+            val activeNetworkInfo = connectivityManager.activeNetworkInfo
+            if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun initializeRecyclerViewHourly(): RecyclerView {
         //adapter = ForecastWeatherHourlyAdapter()
         adapterHourly = WeatherForecastAdapterHourly()
         binding.recyclerViewHourly.adapter = adapterHourly
         return binding.recyclerViewHourly
     }
 
-    private fun initializeRecyclerViewDaily(mainFragmentViewModel: MainFragmentViewModel): RecyclerView {
+    private fun initializeRecyclerViewDaily(): RecyclerView {
         adapterDaily = WeatherForecastAdapterDaily()
         binding.recyclerViewDaily.adapter = adapterDaily
         return binding.recyclerViewDaily
@@ -164,7 +190,7 @@ class MainFragment : Fragment() {
 
     private fun createListOfForecastWeatherHourly(response: Response<ForecastWeather>): List<Hour>{
         val listOfHours = mutableListOf<Hour>()
-        var timeCounter = getTime().toInt()
+        var timeCounter = getCurrentTime().toInt()
         var firstObject = 0
         for (i in 0..23){
             if (timeCounter == 23){
@@ -178,7 +204,7 @@ class MainFragment : Fragment() {
         return listOfHours
     }
 
-    private fun getTime(): String {
+    private fun getCurrentTime(): String {
         return Calendar.getInstance().timeInMillis.millisToHour()
     }
 
@@ -245,8 +271,14 @@ class MainFragment : Fragment() {
             tvConditionText.text = localCurrentWeather.condition
             Glide.with(context!!).load(localCurrentWeather.icon)
                 .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                //.placeholder(R.mipmap.weatherlicious_logo)
                 .into(ivConditionIcon)
+        }
+    }
+
+    private fun observeLocalForecastWeatherHourly(){
+        mainFragmentViewModel.localForecastWeatherHourly.observe(viewLifecycleOwner) { listOfLocalForecastWeatherHourly ->
+            //TODO create another adapter for a list of LocalForecastWeatherHourly
+            //adapterHourly.submitList(listOfLocalForecastWeatherHourly)
         }
     }
 

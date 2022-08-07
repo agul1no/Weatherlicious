@@ -1,5 +1,6 @@
 package com.example.weatherlicious.data.source.repository
 
+import androidx.lifecycle.LiveData
 import com.example.weatherlicious.data.model.currentweather.CurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
 import com.example.weatherlicious.data.source.local.entities.City
@@ -20,13 +21,13 @@ interface WeatherRepository {
 
     suspend fun deleteCurrentWeather()
 
-    fun getLocalCurrentWeather(): Flow<LocalCurrentWeather>
+    suspend fun getLocalCurrentWeather(): LocalCurrentWeather
 
-    suspend fun insertForecastWeather(vararg localForecastWeather: LocalForecastWeatherHourly)
+    suspend fun insertLocalForecastWeatherHourly(localForecastWeatherHourly: LocalForecastWeatherHourly)
 
-    suspend fun deleteForecastWeather()
+    suspend fun deleteLocalForecastWeatherHourly()
 
-    fun getLocalForecastWeather(): Flow<LocalForecastWeatherHourly>
+    fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly>
 
     suspend fun insertCity(city: City)
 

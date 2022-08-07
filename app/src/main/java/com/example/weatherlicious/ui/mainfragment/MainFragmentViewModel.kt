@@ -5,24 +5,25 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.example.weatherlicious.data.model.currentweather.CurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
+import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
 import com.example.weatherlicious.data.source.repository.WeatherRepository
 import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToHourMin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,23 +42,59 @@ class MainFragmentViewModel @Inject constructor(
 
     private var _localCurrentWeather = MutableLiveData<LocalCurrentWeather>()
     val localCurrentWeather = _localCurrentWeather
-    
-    fun transformRemoteForecastWeatherIntoLocalCurrentWeather(context: Context){
-        viewModelScope.launch (Dispatchers.IO) {
+
+    private var _localForecastWeatherHourly = MutableLiveData<List<LocalForecastWeatherHourly>>()
+    val localForecastWeatherHourly = _localForecastWeatherHourly
+
+    fun transformRemoteForecastWeatherIntoLocalCurrentWeather(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteCurrentWeather()
             val response = weatherRepository.getRemoteWeatherForecastHourly()
-            val cityName = response.body()!!.location.name
-            val timeStamp = response.body()!!.location.localtime.dateYearMonthDayHourMinToMillis().millisToDateDayMonthYearHourMin()
-            val icon = convertUrlIconToBitmap("https:${response.body()!!.current.condition.icon}", context)
-            val temperature = "${response.body()!!.current.temp_c.toInt()}°"
-            val condition = response.body()!!.current.condition.text
-            val wind = "Wind:  ${response.body()!!.current.wind_kph.toInt()} Kph"
-            val maxAndMinTemp = "${response.body()!!.forecast.forecastday[0].day.maxtemp_c.toInt()}° " +
-                    "/ ${response.body()!!.forecast.forecastday[0].day.mintemp_c.toInt()}°"
-            val feelsLike = "Feelslike:  ${response.body()!!.current.feelslike_c.toInt()}°"
-
-            val localCurrentWeather = LocalCurrentWeather(0, cityName, timeStamp, icon , temperature, condition, wind, maxAndMinTemp, feelsLike)
+            val localCurrentWeather = LocalCurrentWeather(
+                0,
+                response.body()!!.location.name,
+                response.body()!!.location.localtime.dateYearMonthDayHourMinToMillis().millisToDateDayMonthYearHourMin(),
+                convertUrlIconToBitmap("https:${response.body()!!.current.condition.icon}", context),
+                "${response.body()!!.current.temp_c.toInt()}°",
+                response.body()!!.current.condition.text,
+                "Wind:  ${response.body()!!.current.wind_kph.toInt()} Kph",
+                "${response.body()!!.forecast.forecastday[0].day.maxtemp_c.toInt()}° " +
+                        "/ ${response.body()!!.forecast.forecastday[0].day.mintemp_c.toInt()}°",
+                "Feelslike:  ${response.body()!!.current.feelslike_c.toInt()}°"
+            )
             weatherRepository.insertCurrentWeather(localCurrentWeather)
+        }
+    }
+
+    fun transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.deleteLocalForecastWeatherHourly()
+            val response = weatherRepository.getRemoteWeatherForecastHourly()
+            var firstObject = 0
+            var timeCounter = Calendar.getInstance().timeInMillis.millisToHour().toInt()
+            for (i in 0..23) {
+                if (timeCounter == 23) {
+                    insertLocalForecastWeatherHourly(response, firstObject, timeCounter, context)
+                    firstObject = 1
+                    timeCounter = 0
+                }
+                insertLocalForecastWeatherHourly(response, firstObject, timeCounter, context)
+                timeCounter++
+            }
+        }
+    }
+
+    private fun insertLocalForecastWeatherHourly(response: Response<ForecastWeather>, firstObject: Int, timeCounter:Int , context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val localForecastWeatherHourly = LocalForecastWeatherHourly(
+                0,
+                response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].time.dateYearMonthDayHourMinToMillis()
+                    .millisToHourMin(),
+                convertUrlIconToBitmap("https:${response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].condition.icon}", context),
+                "${response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].temp_c.toInt()}°",
+                "${response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].chance_of_rain} %"
+            )
+            weatherRepository.insertLocalForecastWeatherHourly(localForecastWeatherHourly)
         }
     }
 
@@ -80,11 +117,15 @@ class MainFragmentViewModel @Inject constructor(
         }
     }
 
-    fun getLocalCurrentWeather(){
-        viewModelScope.launch (Dispatchers.IO) {
-            weatherRepository.getLocalCurrentWeather().collect(){ localCurrentWeather ->
-                _localCurrentWeather.postValue(localCurrentWeather) // TODO localCurrentWeather is null
-            }
+    fun getLocalCurrentWeather() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _localCurrentWeather.postValue(weatherRepository.getLocalCurrentWeather())
+        }
+    }
+
+    fun getLocalForecastWeatherHourly(){
+        viewModelScope.launch(Dispatchers.IO) {
+            _localForecastWeatherHourly.postValue(weatherRepository.getLocalForecastWeatherHourly())
         }
     }
 

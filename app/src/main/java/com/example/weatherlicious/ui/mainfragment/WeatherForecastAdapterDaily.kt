@@ -59,10 +59,7 @@ class WeatherForecastAdapterDaily : ListAdapter<ForecastDay, WeatherForecastAdap
             return oldItem.date == newItem.date
         }
 
-        override fun areContentsTheSame(
-            oldItem: ForecastDay,
-            newItem: ForecastDay
-        ): Boolean {
+        override fun areContentsTheSame(oldItem: ForecastDay, newItem: ForecastDay): Boolean {
             return oldItem == newItem
         }
     }

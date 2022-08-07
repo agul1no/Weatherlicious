@@ -34,11 +34,8 @@ class WeatherForecastAdapterHourly : ListAdapter<Hour, WeatherForecastAdapterHou
                 tvTime.text = forecastWeatherHourly.time.dateYearMonthDayHourMinToMillis().millisToHourMin()
                 tvTemp.text = "${forecastWeatherHourly.temp_c.toInt()}°"
                 tvRainProbability.text = "${forecastWeatherHourly.chance_of_rain} %"
-                //val bitmap = BitmapFactory.decodeStream("https:${forecastWeatherHourly.condition.icon}")
-                //itemBinding.ivWeatherImage.setImageBitmap(bitmap)
                 Glide.with(itemView).load("https:${forecastWeatherHourly.condition.icon}")
                     .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                    //.placeholder(R.mipmap.weatherlicious_logo)
                     .into(ivWeatherImage)
             }
         }
@@ -49,10 +46,7 @@ class WeatherForecastAdapterHourly : ListAdapter<Hour, WeatherForecastAdapterHou
             return oldItem.time_epoch == newItem.time_epoch
         }
 
-        override fun areContentsTheSame(
-            oldItem: Hour,
-            newItem: Hour
-        ): Boolean {
+        override fun areContentsTheSame(oldItem: Hour, newItem: Hour): Boolean {
             return oldItem == newItem
         }
     }

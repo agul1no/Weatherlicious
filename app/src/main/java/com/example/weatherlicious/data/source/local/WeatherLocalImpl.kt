@@ -17,20 +17,20 @@ class WeatherLocalImpl @Inject constructor(
         weatherDatabase.weatherDao.deleteCurrentWeather()
     }
 
-    override fun getLocalCurrentWeather(): Flow<LocalCurrentWeather> {
+    override suspend fun getLocalCurrentWeather(): LocalCurrentWeather {
         return weatherDatabase.weatherDao.getLocalCurrentWeather()
     }
 
-    override suspend fun insertForecastWeather(vararg localForecastWeather: LocalForecastWeatherHourly) {
-        weatherDatabase.weatherDao.insertForecastWeather()
+    override suspend fun insertLocalForecastWeatherHourly(localForecastWeatherHourly: LocalForecastWeatherHourly) {
+        weatherDatabase.weatherDao.insertLocalForecastWeatherHourly(localForecastWeatherHourly)
     }
 
-    override suspend fun deleteForecastWeather() {
-        weatherDatabase.weatherDao.deleteForecastWeather()
+    override suspend fun deleteLocalForecastWeatherHourly() {
+        weatherDatabase.weatherDao.deleteLocalForecastWeatherHourly()
     }
 
-    override fun getLocalForecastWeather(): Flow<LocalForecastWeatherHourly> {
-        return weatherDatabase.weatherDao.getLocalForecastWeather()
+    override fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly> {
+        return weatherDatabase.weatherDao.getLocalForecastWeatherHourly()
     }
 
     override suspend fun insertCity(city: City) {

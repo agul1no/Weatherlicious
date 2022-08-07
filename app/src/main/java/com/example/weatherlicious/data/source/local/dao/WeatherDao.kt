@@ -1,5 +1,6 @@
 package com.example.weatherlicious.data.source.local.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
@@ -16,16 +17,16 @@ interface WeatherDao {
     suspend fun deleteCurrentWeather()
 
     @Query("SELECT * FROM current_weather_table")
-    fun getLocalCurrentWeather(): Flow<LocalCurrentWeather>
+    suspend fun getLocalCurrentWeather(): LocalCurrentWeather
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertForecastWeather(vararg localForecastWeather: LocalForecastWeatherHourly)
+    suspend fun insertLocalForecastWeatherHourly(localForecastWeatherHourly: LocalForecastWeatherHourly)
 
     @Query("DELETE FROM forecast_weather_hourly_table")
-    suspend fun deleteForecastWeather()
+    suspend fun deleteLocalForecastWeatherHourly()
 
     @Query("SELECT * FROM forecast_weather_hourly_table")
-    fun getLocalForecastWeather(): Flow<LocalForecastWeatherHourly>
+    fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCity(city: City)
