@@ -72,22 +72,22 @@ class MainFragmentViewModel @Inject constructor(
             val response = weatherRepository.getRemoteWeatherForecastHourly()
             var firstObject = 0
             var timeCounter = Calendar.getInstance().timeInMillis.millisToHour().toInt()
-            for (i in 0..23) {
+            for (i in 1..24) {
                 if (timeCounter == 23) {
-                    insertLocalForecastWeatherHourly(response, firstObject, timeCounter, context)
+                    insertLocalForecastWeatherHourly(i, response, firstObject, timeCounter, context)
                     firstObject = 1
                     timeCounter = 0
                 }
-                insertLocalForecastWeatherHourly(response, firstObject, timeCounter, context)
+                insertLocalForecastWeatherHourly(i, response, firstObject, timeCounter, context)
                 timeCounter++
             }
         }
     }
 
-    private fun insertLocalForecastWeatherHourly(response: Response<ForecastWeather>, firstObject: Int, timeCounter:Int , context: Context) {
+    private fun insertLocalForecastWeatherHourly(id: Int, response: Response<ForecastWeather>, firstObject: Int, timeCounter:Int , context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val localForecastWeatherHourly = LocalForecastWeatherHourly(
-                0,
+                id,
                 response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].time.dateYearMonthDayHourMinToMillis()
                     .millisToHourMin(),
                 convertUrlIconToBitmap("https:${response.body()!!.forecast.forecastday[firstObject].hour[timeCounter].condition.icon}", context),

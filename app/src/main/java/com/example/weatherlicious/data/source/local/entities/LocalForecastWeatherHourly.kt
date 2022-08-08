@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "forecast_weather_hourly_table")
 data class LocalForecastWeatherHourly(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Int,
     val hour: String,
     val icon: Bitmap,
     val temperature: String,

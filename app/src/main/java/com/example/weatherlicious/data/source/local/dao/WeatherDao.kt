@@ -25,7 +25,7 @@ interface WeatherDao {
     @Query("DELETE FROM forecast_weather_hourly_table")
     suspend fun deleteLocalForecastWeatherHourly()
 
-    @Query("SELECT * FROM forecast_weather_hourly_table")
+    @Query("SELECT * FROM forecast_weather_hourly_table ORDER BY id ASC")
     fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

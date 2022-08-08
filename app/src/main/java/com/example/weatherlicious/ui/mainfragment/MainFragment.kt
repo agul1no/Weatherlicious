@@ -42,8 +42,10 @@ class MainFragment : Fragment() {
     private val binding get() = _binding!!
 
     //private lateinit var adapter: ForecastWeatherHourlyAdapter
-    private lateinit var adapterHourly: WeatherForecastAdapterHourly
-    private lateinit var adapterDaily: WeatherForecastAdapterDaily
+    private lateinit var adapterRemoteForecastWeatherHourly: RemoteWeatherForecastAdapterHourly
+    private lateinit var adapterRemoteForecastWeatherDaily: WeatherForecastAdapterDaily
+    private lateinit var adapterLocalForecastWeatherHourly: LocalForecastWeatherHourlyAdapter
+    //private lateinit var adapterLocalForecastWeatherDaily: WeatherForecastAdapterDaily
 
     private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
     lateinit var connectionLiveData: ConnectionLiveData
@@ -129,14 +131,14 @@ class MainFragment : Fragment() {
 
     private fun initializeRecyclerViewHourly(): RecyclerView {
         //adapter = ForecastWeatherHourlyAdapter()
-        adapterHourly = WeatherForecastAdapterHourly()
-        binding.recyclerViewHourly.adapter = adapterHourly
+        adapterRemoteForecastWeatherHourly = RemoteWeatherForecastAdapterHourly()
+        binding.recyclerViewHourly.adapter = adapterRemoteForecastWeatherHourly
         return binding.recyclerViewHourly
     }
 
     private fun initializeRecyclerViewDaily(): RecyclerView {
-        adapterDaily = WeatherForecastAdapterDaily()
-        binding.recyclerViewDaily.adapter = adapterDaily
+        adapterRemoteForecastWeatherDaily = WeatherForecastAdapterDaily()
+        binding.recyclerViewDaily.adapter = adapterRemoteForecastWeatherDaily
         return binding.recyclerViewDaily
     }
 
@@ -183,8 +185,10 @@ class MainFragment : Fragment() {
 
     private fun observeRemoteForecastWeatherHourly(){
         mainFragmentViewModel.forecastWeatherHourly.observe(viewLifecycleOwner) { response ->
+            adapterRemoteForecastWeatherHourly = RemoteWeatherForecastAdapterHourly()
+            binding.recyclerViewHourly.adapter = adapterRemoteForecastWeatherHourly
             val listOfHours = createListOfForecastWeatherHourly(response)
-            adapterHourly.submitList(listOfHours)
+            adapterRemoteForecastWeatherHourly.submitList(listOfHours)
         }
     }
 
@@ -231,7 +235,7 @@ class MainFragment : Fragment() {
     private fun observeRemoteForecastWeatherDaily(){
         mainFragmentViewModel.forecastWeatherDaily.observe(viewLifecycleOwner) { response ->
             val listOfDays = createListOfForecastWeatherDaily(response)
-            adapterDaily.submitList(listOfDays)
+            adapterRemoteForecastWeatherDaily.submitList(listOfDays)
         }
     }
 
@@ -278,7 +282,9 @@ class MainFragment : Fragment() {
     private fun observeLocalForecastWeatherHourly(){
         mainFragmentViewModel.localForecastWeatherHourly.observe(viewLifecycleOwner) { listOfLocalForecastWeatherHourly ->
             //TODO create another adapter for a list of LocalForecastWeatherHourly
-            //adapterHourly.submitList(listOfLocalForecastWeatherHourly)
+            adapterLocalForecastWeatherHourly = LocalForecastWeatherHourlyAdapter()
+            binding.recyclerViewHourly.adapter = adapterLocalForecastWeatherHourly
+            adapterLocalForecastWeatherHourly.submitList(listOfLocalForecastWeatherHourly)
         }
     }
 
