@@ -1,50 +1,70 @@
 package com.example.weatherlicious.ui.mainfragment
 
+import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
+import android.widget.Toast
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import com.example.weatherlicious.data.model.currentweather.CurrentWeather
-import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
-import com.example.weatherlicious.data.model.forecastweather.Hour
+import com.example.weatherlicious.WeatherApplication
+import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeatherExtraData
+import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
 import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
 import com.example.weatherlicious.data.source.repository.WeatherRepository
 import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayHourMinToMillis
+import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayToMillis
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateYearMonthDay
+import com.example.weatherlicious.util.DateFormatter.Companion.millisToDayOfTheWeek
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHourMin
+import com.example.weatherlicious.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import java.io.IOException
+import java.net.SocketTimeoutException
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class MainFragmentViewModel @Inject constructor(
+    private val applicationContext: Application,
     private val weatherRepository: WeatherRepository
-) : ViewModel() {
+) : AndroidViewModel(applicationContext) {
 
-    private var _remoteCurrentWeather = MutableLiveData<Response<CurrentWeather>>()
+    private var _remoteCurrentWeather = MutableLiveData<Response<RemoteCurrentWeather>>()
     val remoteCurrentWeather = _remoteCurrentWeather
 
-    private var _forecastWeatherHourly = MutableLiveData<Response<ForecastWeather>>()
-    val forecastWeatherHourly = _forecastWeatherHourly
+    private var _remoteForecastWeatherHourly = MutableLiveData<Resource<RemoteForecastWeather>>()
+    val remoteForecastWeatherHourly = _remoteForecastWeatherHourly
 
-    private var _forecastWeatherDaily = MutableLiveData<Response<ForecastWeather>>()
-    val forecastWeatherDaily = _forecastWeatherDaily
+    private var _remoteForecastWeatherDaily = MutableLiveData<Response<RemoteForecastWeather>>()
+    val remoteForecastWeatherDaily = _remoteForecastWeatherDaily
 
-    private var _localCurrentWeather = MutableLiveData<LocalCurrentWeather>()
+    private var _localCurrentWeather = MutableLiveData<Resource<LocalCurrentWeather>>()
     val localCurrentWeather = _localCurrentWeather
 
     private var _localForecastWeatherHourly = MutableLiveData<List<LocalForecastWeatherHourly>>()
     val localForecastWeatherHourly = _localForecastWeatherHourly
+
+    private var _localForecastWeatherDaily = MutableLiveData<List<LocalForecastWeatherDaily>>()
+    val localForecastWeatherDaily = _localForecastWeatherDaily
+
+    private var _localCurrentWeatherExtraData = MutableLiveData<LocalCurrentWeatherExtraData>()
+    val localCurrentWeatherExtraData = _localCurrentWeatherExtraData
+
+    /** transforming remote data into local data functions **/
 
     fun transformRemoteForecastWeatherIntoLocalCurrentWeather(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -84,7 +104,41 @@ class MainFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun insertLocalForecastWeatherHourly(id: Int, response: Response<ForecastWeather>, firstObject: Int, timeCounter:Int , context: Context) {
+    fun transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context: Context){
+        viewModelScope.launch (Dispatchers.IO) {
+            weatherRepository.deleteLocalForecastWeatherDaily()
+            val response = weatherRepository.getRemoteWeatherForecastDaily()
+            for (i in 0..2){
+                val localForecastWeatherDaily = LocalForecastWeatherDaily(
+                    i,
+                    saveDayOfTheWeek(response.body()!!.forecast.forecastday[i].date.dateYearMonthDayToMillis().millisToDayOfTheWeek()),
+                    "${response.body()!!.forecast.forecastday[i].day.daily_chance_of_rain} %",
+                    convertUrlIconToBitmap("https:${response.body()!!.forecast.forecastday[i].day.condition.icon}", context),
+                    convertUrlIconToBitmap("https:${response.body()!!.forecast.forecastday[i].hour[22].condition.icon}", context),
+                    "${response.body()!!.forecast.forecastday[i].day.maxtemp_c.toInt()}° / ${response.body()!!.forecast.forecastday[i].day.mintemp_c.toInt()}°"
+                )
+                weatherRepository.insertLocalForecastWeatherDaily(localForecastWeatherDaily)
+            }
+        }
+    }
+
+    private fun saveDayOfTheWeek(dayOfTheWeek: String): String{
+        return if (dayOfTheWeek == getDay()){
+            "Today"
+        }else{
+            dayOfTheWeek
+        }
+    }
+
+    private fun getDay(): String {
+        return Calendar.getInstance().timeInMillis.millisToDateYearMonthDay()
+    }
+
+    fun transformRemoteCurrentWeatherExtraDataIntoLocalCurrentWeatherExtraData(){
+
+    }
+
+    private fun insertLocalForecastWeatherHourly(id: Int, response: Response<RemoteForecastWeather>, firstObject: Int, timeCounter:Int, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             val localForecastWeatherHourly = LocalForecastWeatherHourly(
                 id,
@@ -98,34 +152,86 @@ class MainFragmentViewModel @Inject constructor(
         }
     }
 
+    /** Remote Weather functions **/
+
     private fun getRemoteCurrentWeather() {
         viewModelScope.launch(Dispatchers.IO) {
-            //_currentWeather.value = weatherRepository.getCurrentWeather().body()
-            _remoteCurrentWeather.postValue(weatherRepository.getRemoteCurrentWeather())
+            try{
+                _remoteCurrentWeather.postValue(weatherRepository.getRemoteCurrentWeather())
+            }catch (socketTimeoutException: SocketTimeoutException){
+
+            }catch (ioException: IOException){
+
+            }
         }
     }
 
     fun getRemoteForecastWeatherHourly() {
         viewModelScope.launch(Dispatchers.IO) {
-            _forecastWeatherHourly.postValue(weatherRepository.getRemoteWeatherForecastHourly())
+            try{
+                _remoteForecastWeatherHourly.postValue(Resource.Loading())
+                val response = weatherRepository.getRemoteWeatherForecastHourly()
+                _remoteForecastWeatherHourly.postValue(handleRemoteWeatherForecastResponse(response))
+            }catch (socketTimeoutException: SocketTimeoutException){
+                Toast.makeText(applicationContext, "$socketTimeoutException", Toast.LENGTH_SHORT).show()
+            }catch (ioException: IOException){
+                Toast.makeText(applicationContext, "$ioException", Toast.LENGTH_SHORT).show()
+            }
         }
+    }
+
+    private fun handleRemoteWeatherForecastResponse(response: Response<RemoteForecastWeather>): Resource<RemoteForecastWeather>{
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
+                return Resource.Success(resultResponse)
+            }
+        }
+        return Resource.Error(response.message())
     }
 
     fun getRemoteForecastWeatherDaily() {
         viewModelScope.launch(Dispatchers.IO) {
-            _forecastWeatherDaily.postValue(weatherRepository.getRemoteWeatherForecastDaily())
+            try{
+                _remoteForecastWeatherDaily.postValue(weatherRepository.getRemoteWeatherForecastDaily())
+            }catch (socketTimeoutException: SocketTimeoutException){
+
+            }catch (ioException: IOException){
+
+            }
         }
     }
 
+    /** Local Weather functions **/
+
     fun getLocalCurrentWeather() {
         viewModelScope.launch(Dispatchers.IO) {
-            _localCurrentWeather.postValue(weatherRepository.getLocalCurrentWeather())
+            try {
+                _localCurrentWeather.postValue(Resource.Loading())
+                val response = weatherRepository.getLocalCurrentWeather()
+                _localCurrentWeather.postValue(handleLocalWeatherForecastResponse(response))
+            }catch (exception: Exception){
+                Toast.makeText(applicationContext, "$exception", Toast.LENGTH_SHORT).show()
+            }
+
         }
+    }
+
+    private fun handleLocalWeatherForecastResponse(response: LocalCurrentWeather?): Resource<LocalCurrentWeather>{
+        response?.let { resultResponse ->
+            return Resource.Success(resultResponse)
+        }
+        return Resource.Error("Error")
     }
 
     fun getLocalForecastWeatherHourly(){
         viewModelScope.launch(Dispatchers.IO) {
             _localForecastWeatherHourly.postValue(weatherRepository.getLocalForecastWeatherHourly())
+        }
+    }
+
+    fun getLocalForecastWeatherDaily(){
+        viewModelScope.launch (Dispatchers.IO) {
+            _localForecastWeatherDaily.postValue(weatherRepository.getLocalForecastWeatherDaily())
         }
     }
 

@@ -1,10 +1,11 @@
 package com.example.weatherlicious.data.source.repository
 
-import com.example.weatherlicious.data.model.currentweather.CurrentWeather
-import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
+import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.local.WeatherLocal
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
 import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
 import com.example.weatherlicious.data.source.remote.WeatherRemote
 import kotlinx.coroutines.flow.Flow
@@ -16,15 +17,15 @@ class WeatherRepositoryImpl @Inject constructor(
     private val weatherRemote: WeatherRemote,
 ): WeatherRepository {
 
-    override suspend fun getRemoteCurrentWeather(): Response<CurrentWeather> {
+    override suspend fun getRemoteCurrentWeather(): Response<RemoteCurrentWeather> {
         return weatherRemote.getCurrentWeather()
     }
 
-    override suspend fun getRemoteWeatherForecastHourly(): Response<ForecastWeather> {
+    override suspend fun getRemoteWeatherForecastHourly(): Response<RemoteForecastWeather> {
         return weatherRemote.getWeatherForecastHourly()
     }
 
-    override suspend fun getRemoteWeatherForecastDaily(): Response<ForecastWeather> {
+    override suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather> {
         return weatherRemote.getWeatherForecastDaily()
     }
 
@@ -50,6 +51,18 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly> {
         return weatherLocal.getLocalForecastWeatherHourly()
+    }
+
+    override suspend fun insertLocalForecastWeatherDaily(localForecastWeatherDaily: LocalForecastWeatherDaily) {
+        weatherLocal.insertLocalForecastWeatherDaily(localForecastWeatherDaily)
+    }
+
+    override suspend fun deleteLocalForecastWeatherDaily(){
+        weatherLocal.deleteLocalForecastWeatherDaily()
+    }
+
+    override fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>{
+        return weatherLocal.getLocalForecastWeatherDaily()
     }
 
     override suspend fun insertCity(city: City) {

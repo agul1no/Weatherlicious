@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "forecast_weather_daily_table")
 data class LocalForecastWeatherDaily(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    val id: Int,
     val dayOfTheWeek: String,
     val chanceOfRain: String,
     val iconDay: Bitmap,

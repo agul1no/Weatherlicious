@@ -1,21 +1,21 @@
 package com.example.weatherlicious.data.source.repository
 
-import androidx.lifecycle.LiveData
-import com.example.weatherlicious.data.model.currentweather.CurrentWeather
-import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
+import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
 import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 interface WeatherRepository {
 
-    suspend fun getRemoteCurrentWeather(): Response<CurrentWeather>
+    suspend fun getRemoteCurrentWeather(): Response<RemoteCurrentWeather>
 
-    suspend fun getRemoteWeatherForecastHourly(): Response<ForecastWeather>
+    suspend fun getRemoteWeatherForecastHourly(): Response<RemoteForecastWeather>
 
-    suspend fun getRemoteWeatherForecastDaily(): Response<ForecastWeather>
+    suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather>
 
     suspend fun insertCurrentWeather(localCurrentWeather: LocalCurrentWeather)
 
@@ -28,6 +28,12 @@ interface WeatherRepository {
     suspend fun deleteLocalForecastWeatherHourly()
 
     fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly>
+
+    suspend fun insertLocalForecastWeatherDaily(localForecastWeatherDaily: LocalForecastWeatherDaily)
+
+    suspend fun deleteLocalForecastWeatherDaily()
+
+    fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>
 
     suspend fun insertCity(city: City)
 

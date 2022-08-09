@@ -8,7 +8,7 @@ import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
 
-class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
+class ConnectionLiveData(context: Context) : LiveData<Boolean>() {
 
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager = context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -33,7 +33,6 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
     }
 
     private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
-
         /*
           Called when a network is detected. If that network has internet, save it in the Set.
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onAvailable(android.net.Network)
@@ -47,7 +46,6 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
             }
             checkValidNetworks()
         }
-
         /*
           If the callback was registered with registerNetworkCallback() it will be called for each network which no longer satisfies the criteria of the callback.
           Source: https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback#onLost(android.net.Network)
@@ -57,5 +55,4 @@ class ConnectionLiveData(private val context: Context) : LiveData<Boolean>() {
             checkValidNetworks()
         }
     }
-
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
 import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
 import kotlinx.coroutines.flow.Flow
 
@@ -27,6 +28,15 @@ interface WeatherDao {
 
     @Query("SELECT * FROM forecast_weather_hourly_table ORDER BY id ASC")
     fun getLocalForecastWeatherHourly(): List<LocalForecastWeatherHourly>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocalForecastWeatherDaily(localForecastWeatherDaily: LocalForecastWeatherDaily)
+
+    @Query("DELETE FROM forecast_weather_daily_table")
+    suspend fun deleteLocalForecastWeatherDaily()
+
+    @Query("SELECT * FROM forecast_weather_daily_table ORDER BY id ASC")
+    fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCity(city: City)

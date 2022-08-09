@@ -14,9 +14,9 @@ import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateYearM
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDayOfTheWeek
 import java.util.*
 
-class WeatherForecastAdapterDaily : ListAdapter<ForecastDay, WeatherForecastAdapterDaily.ViewHolder>(WeatherForecastDiffCallBack()) {
+class RemoteWeatherForecastAdapterDaily : ListAdapter<ForecastDay, RemoteWeatherForecastAdapterDaily.ViewHolder>(WeatherForecastDiffCallBack()) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherForecastAdapterDaily.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RemoteWeatherForecastAdapterDaily.ViewHolder {
         val view = WeatherDailyRecycleViewItemBinding
             .inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(view)
