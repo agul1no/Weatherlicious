@@ -1,7 +1,7 @@
 package com.example.weatherlicious.data.source.remote
 
-import com.example.weatherlicious.data.model.currentweather.CurrentWeather
-import com.example.weatherlicious.data.model.forecastweather.ForecastWeather
+import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
+import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.remote.api.WeatherAPI
 import retrofit2.Response
 import javax.inject.Inject
@@ -10,15 +10,15 @@ class WeatherRemoteImpl @Inject constructor(
     private val weatherAPI: WeatherAPI
 ): WeatherRemote {
 
-    override suspend fun getCurrentWeather(): Response<CurrentWeather> {
+    override suspend fun getCurrentWeather(): Response<RemoteCurrentWeather> {
         return weatherAPI.getCurrentWeatherByCity()
     }
 
-    override suspend fun getWeatherForecastHourly(): Response<ForecastWeather> {
+    override suspend fun getWeatherForecastHourly(): Response<RemoteForecastWeather> {
         return weatherAPI.getForecastWeatherByCityNextTenDays()
     }
 
-    override suspend fun getWeatherForecastDaily(): Response<ForecastWeather> {
+    override suspend fun getWeatherForecastDaily(): Response<RemoteForecastWeather> {
         return weatherAPI.getForecastWeatherByCityNextTenDays()
     }
 }
