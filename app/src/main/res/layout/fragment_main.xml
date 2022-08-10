@@ -183,6 +183,18 @@
                         app:layout_constraintTop_toBottomOf="@+id/ivConditionIcon"
                         tools:listitem="@layout/weather_hourly_recyclerview_item" />
 
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="true"
+                        android:indeterminateDrawable="@drawable/gradient_rotating_progressbar"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.5"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.cardview.widget.CardView>
@@ -190,7 +202,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewForecast"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="320dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="10dp"
@@ -204,15 +216,15 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewDaily"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
-                        tools:listitem="@layout/weather_daily_recycle_view_item"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        android:layout_height="280dp"
                         android:orientation="vertical"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:listitem="@layout/weather_daily_recycle_view_item" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
@@ -222,8 +234,8 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="30dp"
                 android:layout_marginStart="10dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
                 app:cardCornerRadius="20dp"
