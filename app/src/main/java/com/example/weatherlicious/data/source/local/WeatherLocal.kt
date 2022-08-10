@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherlicious.data.source.local.entities.City
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherLocal {
@@ -29,6 +26,12 @@ interface WeatherLocal {
     suspend fun deleteLocalForecastWeatherDaily()
 
     fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>
+
+    suspend fun insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData)
+
+    suspend fun deleteCurrentWeatherExtraData()
+
+    fun getLocalCurrentWeatherExtraData(): LocalCurrentWeatherExtraData
 
     suspend fun insertCity(city: City)
 

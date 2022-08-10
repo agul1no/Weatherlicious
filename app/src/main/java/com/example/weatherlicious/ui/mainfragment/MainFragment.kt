@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -23,6 +24,7 @@ import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
+import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeatherExtraData
 import com.example.weatherlicious.databinding.FragmentMainBinding
 import com.example.weatherlicious.util.ConnectionLiveData
 import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.categorizeUVValue
@@ -31,6 +33,7 @@ import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayH
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
 import com.example.weatherlicious.util.Resource
+import com.example.weatherlicious.util.SignalStrengthStateListener
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
 import retrofit2.Response
@@ -46,7 +49,7 @@ class MainFragment : Fragment() {
     private lateinit var adapterRemoteForecastWeatherHourly: RemoteWeatherForecastAdapterHourly
     private lateinit var adapterRemoteForecastWeatherDaily: RemoteWeatherForecastAdapterDaily
     private lateinit var adapterLocalForecastWeatherHourly: LocalForecastWeatherHourlyAdapter
-    //private lateinit var adapterLocalForecastWeatherDaily: WeatherForecastAdapterDaily
+    private lateinit var adapterLocalForecastWeatherDaily: LocalForecastWeatherDailyAdapter
 
     private val mainFragmentViewModel: MainFragmentViewModel by viewModels()
     lateinit var connectionLiveData: ConnectionLiveData
@@ -73,9 +76,11 @@ class MainFragment : Fragment() {
             mainFragmentViewModel.getLocalCurrentWeather()
             mainFragmentViewModel.getLocalForecastWeatherHourly()
             mainFragmentViewModel.getLocalForecastWeatherDaily()
+            mainFragmentViewModel.getLocalCurrentWeatherExtraData()
             observeLocalCurrentWeather()
             observeLocalForecastWeatherHourly()
             observeLocalForecastWeatherDaily()
+            observeLocalCurrentWeatherExtraData()
             Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
         }
         connectionLiveData = ConnectionLiveData(context!!)
@@ -86,18 +91,20 @@ class MainFragment : Fragment() {
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context!!)
+                mainFragmentViewModel.transformRemoteCurrentWeatherExtraDataIntoLocalCurrentWeatherExtraData()
                 observeRemoteCurrentWeather()
                 observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
                 Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
-
             } else {
                 mainFragmentViewModel.getLocalCurrentWeather()
                 mainFragmentViewModel.getLocalForecastWeatherHourly()
                 mainFragmentViewModel.getLocalForecastWeatherDaily()
+                mainFragmentViewModel.getLocalCurrentWeatherExtraData()
                 observeLocalCurrentWeather()
                 observeLocalForecastWeatherHourly()
                 observeLocalForecastWeatherDaily()
+                observeLocalCurrentWeatherExtraData()
                 Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
             }
         }
@@ -268,15 +275,33 @@ class MainFragment : Fragment() {
 
     private fun observeRemoteForecastWeatherDaily(){
         mainFragmentViewModel.remoteForecastWeatherDaily.observe(viewLifecycleOwner) { response ->
-            val listOfDays = createListOfForecastWeatherDaily(response)
-            adapterRemoteForecastWeatherDaily.submitList(listOfDays)
+            adapterRemoteForecastWeatherDaily = RemoteWeatherForecastAdapterDaily()
+            binding.recyclerViewDaily.adapter = adapterRemoteForecastWeatherDaily
+            when(response){
+                is Resource.Success -> {
+                    hideProgressbar()
+                    response.data?.let {
+                        val listOfDays = createListOfForecastWeatherDaily(response)
+                        adapterRemoteForecastWeatherDaily.submitList(listOfDays)
+                    }
+                }
+                is Resource.Error -> {
+                    hideProgressbar()
+                    response.message?.let { message ->
+                        Toast.makeText(context, "An error occurred: $message", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressbar()
+                }
+            }
         }
     }
 
-    private fun createListOfForecastWeatherDaily(response: Response<RemoteForecastWeather>): List<ForecastDay>{
+    private fun createListOfForecastWeatherDaily(response: Resource<RemoteForecastWeather>): List<ForecastDay>{
         val listOfDays = mutableListOf<ForecastDay>()
         for (i in 0..2){
-            listOfDays.add(response.body()?.forecast!!.forecastday[i])
+            listOfDays.add(response.data?.forecast!!.forecastday[i])
         }
         return listOfDays
     }
@@ -338,7 +363,27 @@ class MainFragment : Fragment() {
     }
 
     private fun observeLocalForecastWeatherDaily(){
+        mainFragmentViewModel.localForecastWeatherDaily.observe(viewLifecycleOwner) { listOfLocalForecastWeatherDaily ->
+            adapterLocalForecastWeatherDaily = LocalForecastWeatherDailyAdapter()
+            binding.recyclerViewDaily.adapter = adapterLocalForecastWeatherDaily
+            adapterLocalForecastWeatherDaily.submitList(listOfLocalForecastWeatherDaily)
+        }
+    }
 
+    private fun observeLocalCurrentWeatherExtraData(){
+        mainFragmentViewModel.localCurrentWeatherExtraData.observe(viewLifecycleOwner) { localCurrentWeatherExtraData ->
+            bindLocalCurrentWeatherExtraData(localCurrentWeatherExtraData)
+        }
+    }
+
+    private fun bindLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData){
+        binding.apply {
+            tvUVValue.text = localCurrentWeatherExtraData.uvIndex
+            tvSunriseTime.text = localCurrentWeatherExtraData.sunrise
+            tvSunsetTime.text = localCurrentWeatherExtraData.sunset
+            tvWindValue.text = localCurrentWeatherExtraData.windDirection
+            tvHumidityValue.text = localCurrentWeatherExtraData.humidity
+        }
     }
 
     private fun setToolbarItemListener(){

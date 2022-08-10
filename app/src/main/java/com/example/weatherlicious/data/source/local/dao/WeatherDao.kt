@@ -2,10 +2,7 @@ package com.example.weatherlicious.data.source.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.example.weatherlicious.data.source.local.entities.City
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -37,6 +34,15 @@ interface WeatherDao {
 
     @Query("SELECT * FROM forecast_weather_daily_table ORDER BY id ASC")
     fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData)
+
+    @Query("DELETE FROM current_weather_extra_data")
+    suspend fun deleteCurrentWeatherExtraData()
+
+    @Query("SELECT * FROM current_weather_extra_data")
+    fun getLocalCurrentWeatherExtraData(): LocalCurrentWeatherExtraData
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCity(city: City)

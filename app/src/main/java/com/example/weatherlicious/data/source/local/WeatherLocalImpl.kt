@@ -3,10 +3,7 @@ package com.example.weatherlicious.data.source.local
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.example.weatherlicious.data.source.local.entities.City
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -47,6 +44,18 @@ class WeatherLocalImpl @Inject constructor(
 
     override fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>{
         return weatherDatabase.weatherDao.getLocalForecastWeatherDaily()
+    }
+
+    override suspend fun insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData){
+        weatherDatabase.weatherDao.insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData)
+    }
+
+    override suspend fun deleteCurrentWeatherExtraData(){
+        weatherDatabase.weatherDao.deleteCurrentWeatherExtraData()
+    }
+
+    override fun getLocalCurrentWeatherExtraData(): LocalCurrentWeatherExtraData{
+        return weatherDatabase.weatherDao.getLocalCurrentWeatherExtraData()
     }
 
     override suspend fun insertCity(city: City) {

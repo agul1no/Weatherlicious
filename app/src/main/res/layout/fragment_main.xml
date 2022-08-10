@@ -202,7 +202,7 @@
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardViewForecast"
                 android:layout_width="match_parent"
-                android:layout_height="400dp"
+                android:layout_height="320dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="30dp"
                 android:layout_marginEnd="10dp"
@@ -216,7 +216,7 @@
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewDaily"
                         android:layout_width="match_parent"
-                        android:layout_height="300dp"
+                        android:layout_height="280dp"
                         android:orientation="vertical"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         app:layout_constraintBottom_toBottomOf="parent"

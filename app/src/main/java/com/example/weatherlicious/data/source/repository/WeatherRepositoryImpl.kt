@@ -3,10 +3,7 @@ package com.example.weatherlicious.data.source.repository
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.local.WeatherLocal
-import com.example.weatherlicious.data.source.local.entities.City
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import com.example.weatherlicious.data.source.remote.WeatherRemote
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -63,6 +60,18 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>{
         return weatherLocal.getLocalForecastWeatherDaily()
+    }
+
+    override suspend fun insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData){
+        weatherLocal.insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData)
+    }
+
+    override suspend fun deleteCurrentWeatherExtraData(){
+        weatherLocal.deleteCurrentWeatherExtraData()
+    }
+
+    override fun getLocalCurrentWeatherExtraData(): LocalCurrentWeatherExtraData {
+        return weatherLocal.getLocalCurrentWeatherExtraData()
     }
 
     override suspend fun insertCity(city: City) {

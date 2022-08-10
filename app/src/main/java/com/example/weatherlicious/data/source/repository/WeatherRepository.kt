@@ -2,10 +2,7 @@ package com.example.weatherlicious.data.source.repository
 
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
-import com.example.weatherlicious.data.source.local.entities.City
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
@@ -34,6 +31,12 @@ interface WeatherRepository {
     suspend fun deleteLocalForecastWeatherDaily()
 
     fun getLocalForecastWeatherDaily(): List<LocalForecastWeatherDaily>
+
+    suspend fun insertLocalCurrentWeatherExtraData(localCurrentWeatherExtraData: LocalCurrentWeatherExtraData)
+
+    suspend fun deleteCurrentWeatherExtraData()
+
+    fun getLocalCurrentWeatherExtraData(): LocalCurrentWeatherExtraData
 
     suspend fun insertCity(city: City)
 
