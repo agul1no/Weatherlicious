@@ -2,6 +2,7 @@ package com.example.weatherlicious.data.source.repository
 
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
+import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.entities.*
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -13,6 +14,8 @@ interface WeatherRepository {
     suspend fun getRemoteWeatherForecastHourly(): Response<RemoteForecastWeather>
 
     suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather>
+
+    suspend fun searchForCity(name: String): Response<List<CityItem>>
 
     suspend fun insertCurrentWeather(localCurrentWeather: LocalCurrentWeather)
 
