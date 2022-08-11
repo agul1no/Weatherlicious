@@ -2,6 +2,7 @@ package com.example.weatherlicious.data.source.repository
 
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
+import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.WeatherLocal
 import com.example.weatherlicious.data.source.local.entities.*
 import com.example.weatherlicious.data.source.remote.WeatherRemote
@@ -24,6 +25,10 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather> {
         return weatherRemote.getWeatherForecastDaily()
+    }
+
+    override suspend fun searchForCity(name: String): Response<List<CityItem>> {
+        return weatherRemote.searchForCity(name)
     }
 
     override suspend fun insertCurrentWeather(localCurrentWeather: LocalCurrentWeather) {
