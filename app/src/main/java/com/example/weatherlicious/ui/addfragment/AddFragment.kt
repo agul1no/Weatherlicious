@@ -1,6 +1,8 @@
 package com.example.weatherlicious.ui.addfragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -34,9 +36,10 @@ class AddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
-        createMenuAddIcon()
+        //createMenuAddIcon()
         initializeRecyclerView()
         observeListOfCities()
+        editTextChangeListener()
         return binding.root
     }
 
@@ -68,50 +71,67 @@ class AddFragment : Fragment() {
         }
     }
 
-    private fun createMenuAddIcon(){
-        activity?.addMenuProvider(object: MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.search_menu_add_fragment, menu)
+    private fun editTextChangeListener(){
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(text: Editable?) {
+                binding.recyclerView.isVisible = text.toString().isNotEmpty()
+                addFragmentViewModel.checkQueryIsEmpty(text.toString())
             }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                val searchView = menuItem.actionView as SearchView
-
-
-                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        //addFragmentViewModel.checkQueryIsEmpty(query)
-                        return true
-                    }
-                    override fun onQueryTextChange(query: String?): Boolean {
-                        addFragmentViewModel.checkQueryIsEmpty(query)
-                        return true
-                    }
-                })
-                return true
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // left empty because it is not going to be used or needed
             }
 
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        inflater.inflate(R.menu.search_menu_add_fragment, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                //addFragmentViewModel.checkQueryIsEmpty(query, searchView)
-                return true
-            }
-            override fun onQueryTextChange(query: String?): Boolean {
-                return true
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // left empty because it is not going to be used or needed
             }
         })
-    }*/
+    }
+
+//    private fun createMenuAddIcon(){
+//        activity?.addMenuProvider(object: MenuProvider {
+//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+//                menuInflater.inflate(R.menu.search_menu_add_fragment, menu)
+//            }
+//
+//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+//                val searchView = menuItem.actionView as SearchView
+//
+//
+//                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+//                    override fun onQueryTextSubmit(query: String?): Boolean {
+//                        //addFragmentViewModel.checkQueryIsEmpty(query)
+//                        return true
+//                    }
+//                    override fun onQueryTextChange(query: String?): Boolean {
+//                        addFragmentViewModel.checkQueryIsEmpty(query)
+//                        return true
+//                    }
+//                })
+//                return true
+//            }
+//
+//        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+//    }
+
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        super.onCreateOptionsMenu(menu, inflater)
+//
+//        inflater.inflate(R.menu.search_menu_add_fragment, menu)
+//
+//        val searchItem = menu.findItem(R.id.action_search)
+//        val searchView = searchItem.actionView as SearchView
+//
+//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+//            override fun onQueryTextSubmit(query: String?): Boolean {
+//                //addFragmentViewModel.checkQueryIsEmpty(query, searchView)
+//                return true
+//            }
+//            override fun onQueryTextChange(query: String?): Boolean {
+//                return true
+//            }
+//        })
+//    }
 
     override fun onDestroy() {
         super.onDestroy()

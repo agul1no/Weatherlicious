@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.weatherlicious.ui.mainfragment.MainFragment"
-        android:label="fragment_main"
+        android:label=""
         tools:layout="@layout/fragment_main" >
         <action
             android:id="@+id/action_mainFragment_to_addFragment"

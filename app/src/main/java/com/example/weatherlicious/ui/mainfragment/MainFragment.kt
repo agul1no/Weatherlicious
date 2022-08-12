@@ -64,7 +64,6 @@ class MainFragment : Fragment() {
         initializeRecyclerViewDaily()
 
         hideWeatherImage()
-        setToolbarItemListener()
 
         return binding.root
     }
@@ -386,23 +385,23 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setToolbarItemListener(){
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            navigateToAddFragment(menuItem)
-        }
-    }
-
-    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
-        return when (menuItem.itemId) {
-            R.id.action_add -> {
-                // Navigate to add screen
-                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-                true
-            }
-
-            else -> false
-        }
-    }
+//    private fun setToolbarItemListener(){
+//        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+//            navigateToAddFragment(menuItem)
+//        }
+//    }
+//
+//    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
+//        return when (menuItem.itemId) {
+//            R.id.action_add -> {
+//                // Navigate to add screen
+//                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
+//                true
+//            }
+//
+//            else -> false
+//        }
+//    }
 
     private fun hideProgressbar(){
         binding.progressBar.isVisible = false

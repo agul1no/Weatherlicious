@@ -27,7 +27,8 @@ class CitySearchAdapter : ListAdapter<CityItem, CitySearchAdapter.ViewHolder>(Ci
 
         fun bind(cityItem: CityItem){
             itemBinding.apply {
-                tvCityInfo.text = "${cityItem.name}, ${cityItem.region}, ${cityItem.country}"
+                tvCityName.text = cityItem.name
+                tvCountryName.text = "${cityItem.region}, ${cityItem.country}"
             }
         }
     }

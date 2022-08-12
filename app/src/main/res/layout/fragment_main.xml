@@ -26,7 +26,6 @@
             app:expandedTitleGravity="center"
             app:expandedTitleTextColor="@color/white"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:menu="@menu/add_menu_main_fragment"
             app:titleCollapseMode="fade">
 
             <androidx.appcompat.widget.Toolbar
@@ -34,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
-                app:menu="@menu/add_menu_main_fragment"
                 app:popupTheme="@style/Theme.AppCompat.Light.DarkActionBar">
 
             </androidx.appcompat.widget.Toolbar>
@@ -54,9 +52,7 @@
                 android:layout_height="200dp"
                 android:layout_gravity="bottom"
                 android:background="@drawable/gradient_bottom_image">
-
             </View>
-
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
