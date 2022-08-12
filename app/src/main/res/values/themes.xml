@@ -22,4 +22,10 @@
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:fitsSystemWindows">true</item>
     </style>
+
+    <style name="Theme_Dialog" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="android:windowMinWidthMajor">90%</item>
+        <item name="android:windowMinWidthMinor">90%</item>
+    </style>
+
 </resources>

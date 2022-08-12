@@ -87,7 +87,11 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherLocal.deleteCity(city)
     }
 
-    override fun getPreferredLocation(): Flow<List<City>> {
+    override suspend fun changeMainLocationFromDBToZero() {
+        weatherLocal.changeMainLocationFromDBToZero()
+    }
+
+    override fun getPreferredLocation(): List<City> {
         return weatherLocal.getPreferredLocation()
     }
 }

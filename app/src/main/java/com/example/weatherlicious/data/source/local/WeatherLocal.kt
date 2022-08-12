@@ -37,5 +37,7 @@ interface WeatherLocal {
 
     suspend fun deleteCity(city: City)
 
-    fun getPreferredLocation(): Flow<List<City>>
+    suspend fun changeMainLocationFromDBToZero()
+
+    fun getPreferredLocation(): List<City>
 }

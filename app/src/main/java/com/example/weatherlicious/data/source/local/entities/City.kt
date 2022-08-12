@@ -7,7 +7,13 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "city_table")
 data class City(
     @PrimaryKey(autoGenerate = false)
+    val id: Long,
     val name: String,
-    @ColumnInfo(name = "preferred_location")
-    val preferredLocation: Int
+    val region: String,
+    val country: String,
+    val lat: Double,
+    val lon: Double,
+    val url: String,
+    @ColumnInfo(name = "main_location")
+    val mainLocation: Int
 )

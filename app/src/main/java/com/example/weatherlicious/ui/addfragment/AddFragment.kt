@@ -3,25 +3,22 @@ package com.example.weatherlicious.ui.addfragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuProvider
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherlicious.R
+import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.databinding.FragmentAddBinding
-import com.example.weatherlicious.ui.mainfragment.RemoteWeatherForecastAdapterDaily
+import com.example.weatherlicious.util.dialog.MainLocationDialog
+import com.example.weatherlicious.util.OnItemClickListener
 import com.example.weatherlicious.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddFragment : Fragment() {
+class AddFragment : Fragment(), OnItemClickListener {
 
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
@@ -36,7 +33,6 @@ class AddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
-        //createMenuAddIcon()
         initializeRecyclerView()
         observeListOfCities()
         editTextChangeListener()
@@ -44,7 +40,7 @@ class AddFragment : Fragment() {
     }
 
     private fun initializeRecyclerView(): RecyclerView {
-        adapterCitySearch = CitySearchAdapter()
+        adapterCitySearch = CitySearchAdapter(this)
         binding.recyclerView.adapter = adapterCitySearch
         return binding.recyclerView
     }
@@ -88,50 +84,17 @@ class AddFragment : Fragment() {
         })
     }
 
-//    private fun createMenuAddIcon(){
-//        activity?.addMenuProvider(object: MenuProvider {
-//            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-//                menuInflater.inflate(R.menu.search_menu_add_fragment, menu)
-//            }
-//
-//            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-//                val searchView = menuItem.actionView as SearchView
-//
-//
-//                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-//                    override fun onQueryTextSubmit(query: String?): Boolean {
-//                        //addFragmentViewModel.checkQueryIsEmpty(query)
-//                        return true
-//                    }
-//                    override fun onQueryTextChange(query: String?): Boolean {
-//                        addFragmentViewModel.checkQueryIsEmpty(query)
-//                        return true
-//                    }
-//                })
-//                return true
-//            }
-//
-//        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-//    }
+    override fun onItemClick(position: Int) {
+        val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
+        createAlertDialog(currentCityItem)
+        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
+        findNavController().navigate(action)
+    }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        super.onCreateOptionsMenu(menu, inflater)
-//
-//        inflater.inflate(R.menu.search_menu_add_fragment, menu)
-//
-//        val searchItem = menu.findItem(R.id.action_search)
-//        val searchView = searchItem.actionView as SearchView
-//
-//        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-//            override fun onQueryTextSubmit(query: String?): Boolean {
-//                //addFragmentViewModel.checkQueryIsEmpty(query, searchView)
-//                return true
-//            }
-//            override fun onQueryTextChange(query: String?): Boolean {
-//                return true
-//            }
-//        })
-//    }
+    private fun createAlertDialog(currentCityItem: CityItem){
+        val mainLocationDialog = MainLocationDialog(context!!, addFragmentViewModel)
+        mainLocationDialog.createMainLocationAlterDialog(currentCityItem)
+    }
 
     override fun onDestroy() {
         super.onDestroy()

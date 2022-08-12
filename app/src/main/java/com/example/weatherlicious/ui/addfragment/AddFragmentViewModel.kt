@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
+import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.data.source.repository.WeatherRepository
 import com.example.weatherlicious.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,7 +37,15 @@ class AddFragmentViewModel @Inject constructor(
         }
     }
 
-    //this method should be implemented in the AddFragmentViewModel
+    private fun handleCitySearchResponse(response: Response<List<CityItem>>): Resource<List<CityItem>> {
+        if (response.isSuccessful) {
+            response.body()?.let { resultResponse ->
+                return Resource.Success(resultResponse)
+            }
+        }
+        return Resource.Error(response.message())
+    }
+
    fun checkQueryIsEmpty(query: String?){
         if (query?.isEmpty() == true){
 
@@ -46,12 +55,15 @@ class AddFragmentViewModel @Inject constructor(
         }
     }
 
-    private fun handleCitySearchResponse(response: Response<List<CityItem>>): Resource<List<CityItem>> {
-        if (response.isSuccessful) {
-            response.body()?.let { resultResponse ->
-                return Resource.Success(resultResponse)
-            }
+    fun insertCity(city:City){
+        viewModelScope.launch (Dispatchers.IO) {
+            weatherRepository.insertCity(city)
         }
-        return Resource.Error(response.message())
+    }
+
+    fun changeMainLocationFromDBToZero(){
+        viewModelScope.launch (Dispatchers.IO) {
+            weatherRepository.changeMainLocationFromDBToZero()
+        }
     }
 }
