@@ -23,6 +23,10 @@ class WeatherRemoteImpl @Inject constructor(
         return weatherAPI.getForecastWeatherByCityNextTenDays()
     }
 
+    override suspend fun getForecastWeatherByCityNextSevenDays(mainLocation: String): Response<RemoteForecastWeather> {
+        return weatherAPI.getForecastWeatherByCityNextSevenDays(mainLocation)
+    }
+
     override suspend fun searchForCity(name: String): Response<List<CityItem>> {
         return weatherAPI.searchCity(name)
     }

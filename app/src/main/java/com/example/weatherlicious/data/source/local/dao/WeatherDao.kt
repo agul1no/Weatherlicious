@@ -50,6 +50,12 @@ interface WeatherDao {
     @Delete
     suspend fun deleteCity(city: City)
 
-    @Query("SELECT * FROM city_table WHERE preferred_location LIKE 1")
-    fun getPreferredLocation(): Flow<List<City>>
+    @Query("UPDATE city_table SET main_location = 0")
+    suspend fun changeMainLocationFromDBToZero()
+
+    @Query("SELECT * FROM city_table WHERE main_location LIKE 1")
+    fun getMainLocation(): LiveData<City>
+
+    @Query("SELECT * FROM city_table WHERE main_location LIKE 0")
+    fun getLocationsList(): LiveData<List<City>>
 }

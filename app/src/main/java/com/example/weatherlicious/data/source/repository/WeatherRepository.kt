@@ -1,5 +1,6 @@
 package com.example.weatherlicious.data.source.repository
 
+import androidx.lifecycle.LiveData
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
@@ -14,6 +15,8 @@ interface WeatherRepository {
     suspend fun getRemoteWeatherForecastHourly(): Response<RemoteForecastWeather>
 
     suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather>
+
+    suspend fun getForecastWeatherByCityNextSevenDays(mainLocation: String): Response<RemoteForecastWeather>
 
     suspend fun searchForCity(name: String): Response<List<CityItem>>
 
@@ -45,5 +48,9 @@ interface WeatherRepository {
 
     suspend fun deleteCity(city: City)
 
-    fun getPreferredLocation(): Flow<List<City>>
+    suspend fun changeMainLocationFromDBToZero()
+
+    fun getMainLocation(): LiveData<City>
+
+    fun getLocationsList(): LiveData<List<City>>
 }

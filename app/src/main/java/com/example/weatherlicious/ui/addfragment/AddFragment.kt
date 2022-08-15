@@ -1,25 +1,30 @@
 package com.example.weatherlicious.ui.addfragment
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
-import android.util.Log
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
-import androidx.core.view.MenuProvider
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.weatherlicious.R
+import com.example.weatherlicious.data.model.searchautocomplete.CityItem
+import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.FragmentAddBinding
-import com.example.weatherlicious.ui.mainfragment.RemoteWeatherForecastAdapterDaily
+import com.example.weatherlicious.util.dialog.MainLocationDialog
+import com.example.weatherlicious.util.OnItemClickListener
 import com.example.weatherlicious.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AddFragment : Fragment() {
+class AddFragment : Fragment(), OnItemClickListener {
 
     private var _binding: FragmentAddBinding? = null
     private val binding get() = _binding!!
@@ -34,14 +39,14 @@ class AddFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAddBinding.inflate(inflater, container, false)
-        createMenuAddIcon()
         initializeRecyclerView()
         observeListOfCities()
+        editTextChangeListener()
         return binding.root
     }
 
     private fun initializeRecyclerView(): RecyclerView {
-        adapterCitySearch = CitySearchAdapter()
+        adapterCitySearch = CitySearchAdapter(this)
         binding.recyclerView.adapter = adapterCitySearch
         return binding.recyclerView
     }
@@ -68,50 +73,36 @@ class AddFragment : Fragment() {
         }
     }
 
-    private fun createMenuAddIcon(){
-        activity?.addMenuProvider(object: MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.search_menu_add_fragment, menu)
+    private fun editTextChangeListener(){
+        binding.etSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(text: Editable?) {
+                binding.recyclerView.isVisible = text.toString().isNotEmpty()
+                addFragmentViewModel.checkQueryIsEmpty(text.toString())
             }
 
-            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                val searchView = menuItem.actionView as SearchView
-
-
-                searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-                    override fun onQueryTextSubmit(query: String?): Boolean {
-                        //addFragmentViewModel.checkQueryIsEmpty(query)
-                        return true
-                    }
-                    override fun onQueryTextChange(query: String?): Boolean {
-                        addFragmentViewModel.checkQueryIsEmpty(query)
-                        return true
-                    }
-                })
-                return true
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // left empty because it is not going to be used or needed
             }
 
-        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
-    }
-
-    /*override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-
-        inflater.inflate(R.menu.search_menu_add_fragment, menu)
-
-        val searchItem = menu.findItem(R.id.action_search)
-        val searchView = searchItem.actionView as SearchView
-
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                //addFragmentViewModel.checkQueryIsEmpty(query, searchView)
-                return true
-            }
-            override fun onQueryTextChange(query: String?): Boolean {
-                return true
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // left empty because it is not going to be used or needed
             }
         })
-    }*/
+    }
+
+    override fun onItemClick(position: Int) {
+        val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
+        createAlertDialog(currentCityItem)
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+//        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
+//        findNavController().navigate(action)
+    }
+
+    private fun createAlertDialog(currentCityItem: CityItem){
+        val mainLocationDialog = MainLocationDialog(context!!, addFragmentViewModel)
+        mainLocationDialog.createMainLocationAlterDialog(currentCityItem, findNavController())
+    }
 
     override fun onDestroy() {
         super.onDestroy()

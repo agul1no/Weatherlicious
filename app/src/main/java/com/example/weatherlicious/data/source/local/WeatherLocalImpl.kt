@@ -1,10 +1,7 @@
 package com.example.weatherlicious.data.source.local
 
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.lifecycle.LiveData
 import com.example.weatherlicious.data.source.local.entities.*
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class WeatherLocalImpl @Inject constructor(
@@ -66,7 +63,15 @@ class WeatherLocalImpl @Inject constructor(
         weatherDatabase.weatherDao.deleteCity(city)
     }
 
-    override fun getPreferredLocation(): Flow<List<City>> {
-        return weatherDatabase.weatherDao.getPreferredLocation()
+    override suspend fun changeMainLocationFromDBToZero() {
+        weatherDatabase.weatherDao.changeMainLocationFromDBToZero()
+    }
+
+    override fun getMainLocation(): LiveData<City> {
+        return weatherDatabase.weatherDao.getMainLocation()
+    }
+
+    override fun getLocationsList(): LiveData<List<City>> {
+        return weatherDatabase.weatherDao.getLocationsList()
     }
 }

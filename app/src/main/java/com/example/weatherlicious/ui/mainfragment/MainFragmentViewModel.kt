@@ -53,6 +53,9 @@ class MainFragmentViewModel @Inject constructor(
     private var _remoteForecastWeatherDaily = MutableLiveData<Resource<RemoteForecastWeather>>()
     val remoteForecastWeatherDaily = _remoteForecastWeatherDaily
 
+    private var _remoteForecastWeatherByCity = MutableLiveData<Resource<RemoteForecastWeather>>()
+    val remoteForecastWeatherByCity = _remoteForecastWeatherByCity
+
     private var _localCurrentWeather = MutableLiveData<Resource<LocalCurrentWeather>>()
     val localCurrentWeather = _localCurrentWeather
 
@@ -215,6 +218,22 @@ class MainFragmentViewModel @Inject constructor(
 
             }catch (ioException: IOException){
 
+            }
+        }
+    }
+
+    fun getRemoteForecastWeatherByCity(){
+        viewModelScope.launch (Dispatchers.IO) {
+            try{
+                _remoteForecastWeatherByCity.postValue(Resource.Loading())
+                val mainLocation = weatherRepository.getMainLocation().value?.name
+                val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation.toString())
+                _remoteForecastWeatherByCity.postValue(handleRemoteWeatherForecastResponse(response))
+            }catch (socketTimeoutException: SocketTimeoutException){
+                Toast.makeText(applicationContext, "$socketTimeoutException", Toast.LENGTH_SHORT).show()
+            }catch (ioException: IOException){
+                //Toast.makeText(applicationContext, "$ioException", Toast.LENGTH_SHORT).show()
+                Log.d("ioException getRemoteForecastWeatherByCity", ioException.toString())
             }
         }
     }
