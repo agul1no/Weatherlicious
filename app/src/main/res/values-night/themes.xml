@@ -28,4 +28,9 @@
         <item name="android:windowMinWidthMinor">90%</item>
     </style>
 
+    <style name="NavigationDrawerTextStyle">
+        <item name="android:textColor">@color/light_grey</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
 </resources>

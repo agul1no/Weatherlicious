@@ -2,8 +2,11 @@ package com.example.weatherlicious.util.dialog
 
 import android.app.AlertDialog
 import android.content.Context
+import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.entities.City
+import com.example.weatherlicious.ui.addfragment.AddFragmentDirections
 import com.example.weatherlicious.ui.addfragment.AddFragmentViewModel
 
 class MainLocationDialog(
@@ -11,7 +14,7 @@ class MainLocationDialog(
     private val addFragmentViewModel: AddFragmentViewModel
     ) {
 
-    fun createMainLocationAlterDialog(cityItem: CityItem){
+    fun createMainLocationAlterDialog(cityItem: CityItem, navController: NavController){
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setCancelable(false)
         alertDialogBuilder.setMessage("Do you want to make ${cityItem.name} your main location?")
@@ -30,6 +33,7 @@ class MainLocationDialog(
             addFragmentViewModel.changeMainLocationFromDBToZero()
             addFragmentViewModel.insertCity(city)
             dialog.cancel()
+            navController.navigate(AddFragmentDirections.actionAddFragmentToMainFragment())
         }
 
         alertDialogBuilder.setNegativeButton("No") { dialog, _ ->
@@ -46,9 +50,9 @@ class MainLocationDialog(
             )
             addFragmentViewModel.insertCity(city)
             dialog.cancel()
+            navController.navigate(AddFragmentDirections.actionAddFragmentToMainFragment())
         }
         val alterDialog = alertDialogBuilder.create()
         alterDialog.show()
-
     }
 }

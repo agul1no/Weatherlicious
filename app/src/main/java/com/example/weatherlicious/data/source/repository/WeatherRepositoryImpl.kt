@@ -1,12 +1,12 @@
 package com.example.weatherlicious.data.source.repository
 
+import androidx.lifecycle.LiveData
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.WeatherLocal
 import com.example.weatherlicious.data.source.local.entities.*
 import com.example.weatherlicious.data.source.remote.WeatherRemote
-import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -25,6 +25,10 @@ class WeatherRepositoryImpl @Inject constructor(
 
     override suspend fun getRemoteWeatherForecastDaily(): Response<RemoteForecastWeather> {
         return weatherRemote.getWeatherForecastDaily()
+    }
+
+    override suspend fun getForecastWeatherByCityNextSevenDays(mainLocation: String): Response<RemoteForecastWeather>{
+        return weatherRemote.getForecastWeatherByCityNextSevenDays(mainLocation)
     }
 
     override suspend fun searchForCity(name: String): Response<List<CityItem>> {
@@ -91,7 +95,11 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherLocal.changeMainLocationFromDBToZero()
     }
 
-    override fun getPreferredLocation(): List<City> {
-        return weatherLocal.getPreferredLocation()
+    override fun getMainLocation(): LiveData<City> {
+        return weatherLocal.getMainLocation()
+    }
+
+    override fun getLocationsList(): LiveData<List<City>> {
+        return weatherLocal.getLocationsList()
     }
 }

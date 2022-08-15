@@ -54,5 +54,8 @@ interface WeatherDao {
     suspend fun changeMainLocationFromDBToZero()
 
     @Query("SELECT * FROM city_table WHERE main_location LIKE 1")
-    fun getPreferredLocation(): List<City>
+    fun getMainLocation(): LiveData<City>
+
+    @Query("SELECT * FROM city_table WHERE main_location LIKE 0")
+    fun getLocationsList(): LiveData<List<City>>
 }

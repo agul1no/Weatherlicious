@@ -13,5 +13,7 @@ interface WeatherRemote {
 
     suspend fun getWeatherForecastDaily(): Response<RemoteForecastWeather>
 
+    suspend fun getForecastWeatherByCityNextSevenDays(mainLocation: String): Response<RemoteForecastWeather>
+
     suspend fun searchForCity(name: String): Response<List<CityItem>>
 }

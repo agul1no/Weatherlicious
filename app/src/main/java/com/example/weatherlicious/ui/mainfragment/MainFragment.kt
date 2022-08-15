@@ -80,13 +80,14 @@ class MainFragment : Fragment() {
             observeLocalForecastWeatherHourly()
             observeLocalForecastWeatherDaily()
             observeLocalCurrentWeatherExtraData()
-            Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
         }
         connectionLiveData = ConnectionLiveData(context!!)
         connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
             if (isNetworkAvailable) {
                 mainFragmentViewModel.getRemoteForecastWeatherHourly()
                 mainFragmentViewModel.getRemoteForecastWeatherDaily()
+                mainFragmentViewModel.getRemoteForecastWeatherByCity()
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context!!)
@@ -94,7 +95,8 @@ class MainFragment : Fragment() {
                 observeRemoteCurrentWeather()
                 observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
-                Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
+                observeRemoteForecastWeatherByCity()
+                //Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
             } else {
                 mainFragmentViewModel.getLocalCurrentWeather()
                 mainFragmentViewModel.getLocalForecastWeatherHourly()
@@ -104,7 +106,7 @@ class MainFragment : Fragment() {
                 observeLocalForecastWeatherHourly()
                 observeLocalForecastWeatherDaily()
                 observeLocalCurrentWeatherExtraData()
-                Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -312,6 +314,29 @@ class MainFragment : Fragment() {
             tvSunsetTime.text = remoteForecastWeather.forecast.forecastday[0].astro.sunset
             tvWindValue.text = transformWindDirectionResponse(remoteForecastWeather.current.wind_dir)
             tvHumidityValue.text = "${remoteForecastWeather.current.humidity} %"
+        }
+    }
+
+    private fun observeRemoteForecastWeatherByCity(){
+        mainFragmentViewModel.remoteForecastWeatherByCity.observe(viewLifecycleOwner){ response ->
+            when(response){
+                is Resource.Success -> {
+                    hideProgressbar()
+                    response.data?.let {
+                        val listOfHours = createListOfForecastWeatherHourly(response)
+                        adapterRemoteForecastWeatherHourly.submitList(listOfHours)
+                    }
+                }
+                is Resource.Error -> {
+                    hideProgressbar()
+                    response.message?.let { message ->
+                        Toast.makeText(context, "An error occurred: $message", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressbar()
+                }
+            }
         }
     }
 

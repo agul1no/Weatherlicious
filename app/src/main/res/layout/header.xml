@@ -23,9 +23,11 @@
         android:layout_height="20dp"
         android:src="@drawable/ic_info"
         android:layout_marginEnd="30dp"
+        android:clickable="true"
         app:layout_constraintBottom_toBottomOf="@+id/tvMainLocation"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvMainLocation" />
+        app:layout_constraintTop_toTopOf="@+id/tvMainLocation"
+        android:focusable="true" />
 
     <TextView
         android:id="@+id/tvCityMainLocation"
@@ -40,8 +42,8 @@
 
     <ImageView
         android:id="@+id/ivMainLocation"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvCityMainLocation"
         app:layout_constraintEnd_toStartOf="@+id/tvTemperature"
         app:layout_constraintTop_toTopOf="@+id/tvCityMainLocation"

@@ -1,16 +1,22 @@
 package com.example.weatherlicious.ui.addfragment
 
+import android.app.Activity
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
+import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.FragmentAddBinding
 import com.example.weatherlicious.util.dialog.MainLocationDialog
 import com.example.weatherlicious.util.OnItemClickListener
@@ -87,13 +93,15 @@ class AddFragment : Fragment(), OnItemClickListener {
     override fun onItemClick(position: Int) {
         val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
         createAlertDialog(currentCityItem)
-        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
-        findNavController().navigate(action)
+        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+//        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
+//        findNavController().navigate(action)
     }
 
     private fun createAlertDialog(currentCityItem: CityItem){
         val mainLocationDialog = MainLocationDialog(context!!, addFragmentViewModel)
-        mainLocationDialog.createMainLocationAlterDialog(currentCityItem)
+        mainLocationDialog.createMainLocationAlterDialog(currentCityItem, findNavController())
     }
 
     override fun onDestroy() {

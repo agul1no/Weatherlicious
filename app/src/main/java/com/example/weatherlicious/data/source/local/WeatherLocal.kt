@@ -39,5 +39,7 @@ interface WeatherLocal {
 
     suspend fun changeMainLocationFromDBToZero()
 
-    fun getPreferredLocation(): List<City>
+    fun getMainLocation(): LiveData<City>
+
+    fun getLocationsList(): LiveData<List<City>>
 }

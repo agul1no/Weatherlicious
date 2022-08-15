@@ -16,6 +16,12 @@ interface WeatherAPI {
     @GET("forecast.json?key=${BuildConfig.API_KEY}&q=Leipzig&days=10&aqi=no&alerts=no")
     suspend fun getForecastWeatherByCityNextTenDays(): Response<RemoteForecastWeather>
 
+    @GET("forecast.json?key=${BuildConfig.API_KEY}&days=7&aqi=no&alerts=no")
+    suspend fun getForecastWeatherByCityNextSevenDays(
+        @Query("q")
+        mainLocation: String
+    ): Response<RemoteForecastWeather>
+
     @GET("search.json?key=${BuildConfig.API_KEY}")
     suspend fun searchCity(
         @Query("q")
