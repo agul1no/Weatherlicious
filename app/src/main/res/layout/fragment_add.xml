@@ -6,16 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".ui.addfragment.AddFragment">
 
+    <EditText
+        android:id="@+id/etSearch"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:inputType="textCapSentences"
+        android:hint="Add a new city"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/city_item"/>
+        app:layout_constraintTop_toBottomOf="@+id/etSearch"
+        tools:listitem="@layout/city_item" />
 
     <ProgressBar
         android:id="@+id/progressBar"

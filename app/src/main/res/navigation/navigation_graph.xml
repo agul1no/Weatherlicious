@@ -8,11 +8,15 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.example.weatherlicious.ui.mainfragment.MainFragment"
-        android:label="fragment_main"
-        tools:layout="@layout/fragment_main" >
+        android:label=""
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_addFragment"
-            app:destination="@id/addFragment" />
+            app:destination="@id/addFragment"
+            app:enterAnim="@anim/from_bottom"
+            app:exitAnim="@anim/to_up"
+            app:popEnterAnim="@anim/from_up"
+            app:popExitAnim="@anim/to_bottom" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -21,6 +25,8 @@
         tools:layout="@layout/fragment_add" >
         <action
             android:id="@+id/action_addFragment_to_mainFragment"
-            app:destination="@id/mainFragment" />
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/from_up"
+            app:exitAnim="@anim/to_bottom" />
     </fragment>
 </navigation>

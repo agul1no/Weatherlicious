@@ -64,7 +64,6 @@ class MainFragment : Fragment() {
         initializeRecyclerViewDaily()
 
         hideWeatherImage()
-        setToolbarItemListener()
 
         return binding.root
     }
@@ -81,13 +80,14 @@ class MainFragment : Fragment() {
             observeLocalForecastWeatherHourly()
             observeLocalForecastWeatherDaily()
             observeLocalCurrentWeatherExtraData()
-            Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
+            //Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
         }
         connectionLiveData = ConnectionLiveData(context!!)
         connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
             if (isNetworkAvailable) {
                 mainFragmentViewModel.getRemoteForecastWeatherHourly()
                 mainFragmentViewModel.getRemoteForecastWeatherDaily()
+                mainFragmentViewModel.getRemoteForecastWeatherByCity()
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context!!)
@@ -95,7 +95,8 @@ class MainFragment : Fragment() {
                 observeRemoteCurrentWeather()
                 observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
-                Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
+                observeRemoteForecastWeatherByCity()
+                //Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
             } else {
                 mainFragmentViewModel.getLocalCurrentWeather()
                 mainFragmentViewModel.getLocalForecastWeatherHourly()
@@ -105,7 +106,7 @@ class MainFragment : Fragment() {
                 observeLocalForecastWeatherHourly()
                 observeLocalForecastWeatherDaily()
                 observeLocalCurrentWeatherExtraData()
-                Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
+                //Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -316,6 +317,29 @@ class MainFragment : Fragment() {
         }
     }
 
+    private fun observeRemoteForecastWeatherByCity(){
+        mainFragmentViewModel.remoteForecastWeatherByCity.observe(viewLifecycleOwner){ response ->
+            when(response){
+                is Resource.Success -> {
+                    hideProgressbar()
+                    response.data?.let {
+                        val listOfHours = createListOfForecastWeatherHourly(response)
+                        adapterRemoteForecastWeatherHourly.submitList(listOfHours)
+                    }
+                }
+                is Resource.Error -> {
+                    hideProgressbar()
+                    response.message?.let { message ->
+                        Toast.makeText(context, "An error occurred: $message", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                is Resource.Loading -> {
+                    showProgressbar()
+                }
+            }
+        }
+    }
+
     private fun observeLocalCurrentWeather(){
         mainFragmentViewModel.localCurrentWeather.observe(viewLifecycleOwner) { response ->
             when(response){
@@ -386,23 +410,23 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun setToolbarItemListener(){
-        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-            navigateToAddFragment(menuItem)
-        }
-    }
-
-    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
-        return when (menuItem.itemId) {
-            R.id.action_add -> {
-                // Navigate to add screen
-                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-                true
-            }
-
-            else -> false
-        }
-    }
+//    private fun setToolbarItemListener(){
+//        binding.toolbar.setOnMenuItemClickListener { menuItem ->
+//            navigateToAddFragment(menuItem)
+//        }
+//    }
+//
+//    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
+//        return when (menuItem.itemId) {
+//            R.id.action_add -> {
+//                // Navigate to add screen
+//                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
+//                true
+//            }
+//
+//            else -> false
+//        }
+//    }
 
     private fun hideProgressbar(){
         binding.progressBar.isVisible = false
