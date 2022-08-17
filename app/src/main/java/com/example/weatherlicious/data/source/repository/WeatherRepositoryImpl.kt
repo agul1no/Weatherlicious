@@ -95,7 +95,11 @@ class WeatherRepositoryImpl @Inject constructor(
         weatherLocal.changeMainLocationFromDBToZero()
     }
 
-    override fun getMainLocation(): LiveData<City> {
+    override fun getMainLocationLive(): LiveData<City> {
+        return weatherLocal.getMainLocationLive()
+    }
+
+    override fun getMainLocation(): City? {
         return weatherLocal.getMainLocation()
     }
 

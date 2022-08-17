@@ -7,19 +7,15 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.weatherlicious.R
 import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.model.forecastweather.Hour
@@ -33,10 +29,8 @@ import com.example.weatherlicious.util.DateFormatter.Companion.dateYearMonthDayH
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToDateDayMonthYearHourMin
 import com.example.weatherlicious.util.DateFormatter.Companion.millisToHour
 import com.example.weatherlicious.util.Resource
-import com.example.weatherlicious.util.SignalStrengthStateListener
 import com.google.android.material.appbar.AppBarLayout
 import dagger.hilt.android.AndroidEntryPoint
-import retrofit2.Response
 import java.util.*
 
 @AndroidEntryPoint
@@ -85,17 +79,17 @@ class MainFragment : Fragment() {
         connectionLiveData = ConnectionLiveData(context!!)
         connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
             if (isNetworkAvailable) {
-                mainFragmentViewModel.getRemoteForecastWeatherHourly()
-                mainFragmentViewModel.getRemoteForecastWeatherDaily()
+                //mainFragmentViewModel.getRemoteForecastWeatherHourly()
+                //mainFragmentViewModel.getRemoteForecastWeatherDaily()
                 mainFragmentViewModel.getRemoteForecastWeatherByCity()
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context!!)
                 mainFragmentViewModel.transformRemoteCurrentWeatherExtraDataIntoLocalCurrentWeatherExtraData()
                 observeRemoteCurrentWeather()
-                observeRemoteForecastWeatherHourly()
+                //observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
-                observeRemoteForecastWeatherByCity()
+                observeRemoteForecastWeatherHourlyByCity()
                 //Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
             } else {
                 mainFragmentViewModel.getLocalCurrentWeather()
@@ -190,7 +184,7 @@ class MainFragment : Fragment() {
     }
 
     private fun observeRemoteCurrentWeather() {
-        mainFragmentViewModel.remoteForecastWeatherHourly.observe(viewLifecycleOwner) { response ->
+        mainFragmentViewModel.remoteForecastWeatherByCity.observe(viewLifecycleOwner) { response ->
             when(response){
                 is Resource.Success -> {
                     hideProgressbar()
@@ -224,35 +218,34 @@ class MainFragment : Fragment() {
             tvConditionText.text = remoteForecastWeather.current.condition.text
             Glide.with(context!!).load("https:${remoteForecastWeather.current.condition.icon}")
                 .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                //.placeholder(R.mipmap.weatherlicious_logo)
                 .into(ivConditionIcon)
         }
     }
 
-    private fun observeRemoteForecastWeatherHourly(){
-        mainFragmentViewModel.remoteForecastWeatherHourly.observe(viewLifecycleOwner) { response ->
-            adapterRemoteForecastWeatherHourly = RemoteWeatherForecastAdapterHourly()
-            binding.recyclerViewHourly.adapter = adapterRemoteForecastWeatherHourly
-            when(response){
-                is Resource.Success -> {
-                    hideProgressbar()
-                    response.data?.let {
-                        val listOfHours = createListOfForecastWeatherHourly(response)
-                        adapterRemoteForecastWeatherHourly.submitList(listOfHours)
-                    }
-                }
-                is Resource.Error -> {
-                    hideProgressbar()
-                    response.message?.let { message ->
-                        Toast.makeText(context, "An error occurred: $message", Toast.LENGTH_SHORT).show()
-                    }
-                }
-                is Resource.Loading -> {
-                    showProgressbar()
-                }
-            }
-        }
-    }
+//    private fun observeRemoteForecastWeatherHourly(){
+//        mainFragmentViewModel.remoteForecastWeatherHourly.observe(viewLifecycleOwner) { response ->
+//            adapterRemoteForecastWeatherHourly = RemoteWeatherForecastAdapterHourly()
+//            binding.recyclerViewHourly.adapter = adapterRemoteForecastWeatherHourly
+//            when(response){
+//                is Resource.Success -> {
+//                    hideProgressbar()
+//                    response.data?.let {
+//                        val listOfHours = createListOfForecastWeatherHourly(response)
+//                        adapterRemoteForecastWeatherHourly.submitList(listOfHours)
+//                    }
+//                }
+//                is Resource.Error -> {
+//                    hideProgressbar()
+//                    response.message?.let { message ->
+//                        Toast.makeText(context, "An error occurred: $message", Toast.LENGTH_SHORT).show()
+//                    }
+//                }
+//                is Resource.Loading -> {
+//                    showProgressbar()
+//                }
+//            }
+//        }
+//    }
 
     private fun createListOfForecastWeatherHourly(response: Resource<RemoteForecastWeather>): List<Hour>{
         val listOfHours = mutableListOf<Hour>()
@@ -275,7 +268,7 @@ class MainFragment : Fragment() {
     }
 
     private fun observeRemoteForecastWeatherDaily(){
-        mainFragmentViewModel.remoteForecastWeatherDaily.observe(viewLifecycleOwner) { response ->
+        mainFragmentViewModel.remoteForecastWeatherByCity.observe(viewLifecycleOwner) { response ->
             adapterRemoteForecastWeatherDaily = RemoteWeatherForecastAdapterDaily()
             binding.recyclerViewDaily.adapter = adapterRemoteForecastWeatherDaily
             when(response){
@@ -300,8 +293,9 @@ class MainFragment : Fragment() {
     }
 
     private fun createListOfForecastWeatherDaily(response: Resource<RemoteForecastWeather>): List<ForecastDay>{
+        val sizeListOfDays = response.data?.forecast?.forecastday?.size!!
         val listOfDays = mutableListOf<ForecastDay>()
-        for (i in 0..2){
+        for (i in 0..sizeListOfDays.minus(1)){
             listOfDays.add(response.data?.forecast!!.forecastday[i])
         }
         return listOfDays
@@ -317,7 +311,7 @@ class MainFragment : Fragment() {
         }
     }
 
-    private fun observeRemoteForecastWeatherByCity(){
+    private fun observeRemoteForecastWeatherHourlyByCity(){
         mainFragmentViewModel.remoteForecastWeatherByCity.observe(viewLifecycleOwner){ response ->
             when(response){
                 is Resource.Success -> {
@@ -339,6 +333,8 @@ class MainFragment : Fragment() {
             }
         }
     }
+
+    /** local current weather **/
 
     private fun observeLocalCurrentWeather(){
         mainFragmentViewModel.localCurrentWeather.observe(viewLifecycleOwner) { response ->
@@ -364,17 +360,17 @@ class MainFragment : Fragment() {
 
     private fun bindDataLocalCurrentWeather(localCurrentWeather: LocalCurrentWeather){
         binding.apply {
-            collapsingToolbar.title = localCurrentWeather.cityName
-            tvCityName.text = localCurrentWeather.cityName
-            tvDate.text = "Last update: ${localCurrentWeather.date}"
-            tvTemperature.text = localCurrentWeather.temperature
-            tvFeelsLike.text = localCurrentWeather.feelsLike
-            tvWindKPH.text = localCurrentWeather.wind
-            tvMaxUndMinTemp.text = localCurrentWeather.maxAndMinTemp
-            tvConditionText.text = localCurrentWeather.condition
-            Glide.with(context!!).load(localCurrentWeather.icon)
-                .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                .into(ivConditionIcon)
+                collapsingToolbar.title = localCurrentWeather.cityName
+                tvCityName.text = localCurrentWeather.cityName
+                tvDate.text = "Last update: ${localCurrentWeather.date}"
+                tvTemperature.text = localCurrentWeather.temperature
+                tvFeelsLike.text = localCurrentWeather.feelsLike
+                tvWindKPH.text = localCurrentWeather.wind
+                tvMaxUndMinTemp.text = localCurrentWeather.maxAndMinTemp
+                tvConditionText.text = localCurrentWeather.condition
+                Glide.with(context!!).load(localCurrentWeather.icon)
+                    .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
+                    .into(ivConditionIcon)
         }
     }
 
@@ -396,7 +392,9 @@ class MainFragment : Fragment() {
 
     private fun observeLocalCurrentWeatherExtraData(){
         mainFragmentViewModel.localCurrentWeatherExtraData.observe(viewLifecycleOwner) { localCurrentWeatherExtraData ->
-            bindLocalCurrentWeatherExtraData(localCurrentWeatherExtraData)
+            if (localCurrentWeatherExtraData != null){
+                bindLocalCurrentWeatherExtraData(localCurrentWeatherExtraData)
+            }
         }
     }
 
@@ -409,24 +407,6 @@ class MainFragment : Fragment() {
             tvHumidityValue.text = localCurrentWeatherExtraData.humidity
         }
     }
-
-//    private fun setToolbarItemListener(){
-//        binding.toolbar.setOnMenuItemClickListener { menuItem ->
-//            navigateToAddFragment(menuItem)
-//        }
-//    }
-//
-//    private fun navigateToAddFragment (menuItem: MenuItem) : Boolean{
-//        return when (menuItem.itemId) {
-//            R.id.action_add -> {
-//                // Navigate to add screen
-//                findNavController().navigate(R.id.action_mainFragment_to_addFragment)
-//                true
-//            }
-//
-//            else -> false
-//        }
-//    }
 
     private fun hideProgressbar(){
         binding.progressBar.isVisible = false

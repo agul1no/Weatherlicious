@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import coil.ImageLoader
@@ -14,10 +15,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.example.weatherlicious.data.model.currentweather.RemoteCurrentWeather
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeather
-import com.example.weatherlicious.data.source.local.entities.LocalCurrentWeatherExtraData
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherDaily
-import com.example.weatherlicious.data.source.local.entities.LocalForecastWeatherHourly
+import com.example.weatherlicious.data.source.local.entities.*
 import com.example.weatherlicious.data.source.repository.WeatherRepository
 import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter
 import com.example.weatherlicious.util.CurrentWeatherExtraDataFormatter.Companion.categorizeUVValue
@@ -68,12 +66,31 @@ class MainFragmentViewModel @Inject constructor(
     private var _localCurrentWeatherExtraData = MutableLiveData<LocalCurrentWeatherExtraData>()
     val localCurrentWeatherExtraData = _localCurrentWeatherExtraData
 
+    private var _mainLocation = MutableLiveData<City>()
+    val mainLocation = _mainLocation
+
+    fun getMainLocation() : City? {
+        return weatherRepository.getMainLocation()
+    }
+
+    fun getMainLocationLive(): LiveData<City>{
+        return weatherRepository.getMainLocationLive()
+    }
+
+    fun getOtherLocations(): LiveData<List<City>> {
+        return weatherRepository.getLocationsList()
+    }
+
     /** transforming remote data into local data functions **/
 
     fun transformRemoteForecastWeatherIntoLocalCurrentWeather(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteCurrentWeather()
-            val response = weatherRepository.getRemoteWeatherForecastHourly()
+            var mainLocation = weatherRepository.getMainLocation()?.name
+            if (mainLocation == null){
+                mainLocation = "Leipzig"
+            }
+            val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
             val localCurrentWeather = LocalCurrentWeather(
                 0,
                 response.body()!!.location.name,
@@ -93,7 +110,11 @@ class MainFragmentViewModel @Inject constructor(
     fun transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.deleteLocalForecastWeatherHourly()
-            val response = weatherRepository.getRemoteWeatherForecastHourly()
+            var mainLocation = weatherRepository.getMainLocation()?.name
+            if (mainLocation == null){
+                mainLocation = "Leipzig"
+            }
+            val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
             var firstObject = 0
             var timeCounter = Calendar.getInstance().timeInMillis.millisToHour().toInt()
             for (i in 1..24) {
@@ -125,9 +146,14 @@ class MainFragmentViewModel @Inject constructor(
     fun transformRemoteForecastWeatherDailyIntoLocalForecastWeatherDaily(context: Context){
         viewModelScope.launch (Dispatchers.IO) {
             weatherRepository.deleteLocalForecastWeatherDaily()
-            val response = weatherRepository.getRemoteWeatherForecastDaily()
+            var mainLocation = weatherRepository.getMainLocation()?.name
+            if (mainLocation == null){
+                mainLocation = "Leipzig"
+            }
+            val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
+            val sizeListOfDays = response.body()!!.forecast.forecastday.size
             var firstObject = 0
-            for (i in 1..3){
+            for (i in 1..sizeListOfDays){
                 val localForecastWeatherDaily = LocalForecastWeatherDaily(
                     i,
                     saveDayOfTheWeek(response.body()!!.forecast.forecastday[firstObject].date),
@@ -157,7 +183,11 @@ class MainFragmentViewModel @Inject constructor(
     fun transformRemoteCurrentWeatherExtraDataIntoLocalCurrentWeatherExtraData(){
         viewModelScope.launch (Dispatchers.IO) {
             weatherRepository.deleteCurrentWeatherExtraData()
-            val response = weatherRepository.getRemoteWeatherForecastDaily()
+            var mainLocation = weatherRepository.getMainLocation()?.name
+            if (mainLocation == null){
+                mainLocation = "Leipzig"
+            }
+            val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
             val localCurrentWeatherExtraData = LocalCurrentWeatherExtraData(
                 0,
                 categorizeUVValue(response.body()!!.forecast.forecastday[0].day.uv),
@@ -205,7 +235,7 @@ class MainFragmentViewModel @Inject constructor(
                 return Resource.Success(resultResponse)
             }
         }
-        return Resource.Error(response.message())
+        return Resource.Error("Error receiving the Remote Forecast Weather")
     }
 
     fun getRemoteForecastWeatherDaily() {
@@ -226,8 +256,12 @@ class MainFragmentViewModel @Inject constructor(
         viewModelScope.launch (Dispatchers.IO) {
             try{
                 _remoteForecastWeatherByCity.postValue(Resource.Loading())
-                val mainLocation = weatherRepository.getMainLocation().value?.name
-                val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation.toString())
+                _mainLocation.postValue(weatherRepository.getMainLocation())
+                var mainLocation = weatherRepository.getMainLocation()?.name
+                if (mainLocation == null){
+                    mainLocation = "Leipzig"
+                }
+                val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
                 _remoteForecastWeatherByCity.postValue(handleRemoteWeatherForecastResponse(response))
             }catch (socketTimeoutException: SocketTimeoutException){
                 Toast.makeText(applicationContext, "$socketTimeoutException", Toast.LENGTH_SHORT).show()
@@ -257,7 +291,7 @@ class MainFragmentViewModel @Inject constructor(
         response?.let { resultResponse ->
             return Resource.Success(resultResponse)
         }
-        return Resource.Error("Error")
+        return Resource.Error("Local Current Weather is null")
     }
 
     fun getLocalForecastWeatherHourly(){

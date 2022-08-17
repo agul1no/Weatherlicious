@@ -66,4 +66,11 @@ class AddFragmentViewModel @Inject constructor(
             weatherRepository.changeMainLocationFromDBToZero()
         }
     }
+
+    fun insertCityResettingMainLocation(city: City){
+        viewModelScope.launch (Dispatchers.IO) {
+            weatherRepository.changeMainLocationFromDBToZero()
+            weatherRepository.insertCity(city)
+        }
+    }
 }

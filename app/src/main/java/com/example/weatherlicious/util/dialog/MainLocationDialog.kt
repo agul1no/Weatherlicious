@@ -8,6 +8,7 @@ import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.ui.addfragment.AddFragmentDirections
 import com.example.weatherlicious.ui.addfragment.AddFragmentViewModel
+import kotlinx.coroutines.withContext
 
 class MainLocationDialog(
     private val context: Context,
@@ -30,8 +31,7 @@ class MainLocationDialog(
                 cityItem.url,
                 1
             )
-            addFragmentViewModel.changeMainLocationFromDBToZero()
-            addFragmentViewModel.insertCity(city)
+            addFragmentViewModel.insertCityResettingMainLocation(city)
             dialog.cancel()
             navController.navigate(AddFragmentDirections.actionAddFragmentToMainFragment())
         }

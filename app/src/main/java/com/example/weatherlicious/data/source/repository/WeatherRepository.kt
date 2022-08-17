@@ -50,7 +50,9 @@ interface WeatherRepository {
 
     suspend fun changeMainLocationFromDBToZero()
 
-    fun getMainLocation(): LiveData<City>
+    fun getMainLocationLive(): LiveData<City>
+
+    fun getMainLocation(): City?
 
     fun getLocationsList(): LiveData<List<City>>
 }

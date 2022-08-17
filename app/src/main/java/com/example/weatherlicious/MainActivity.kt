@@ -4,36 +4,30 @@ import android.app.AlertDialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.forEach
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.weatherlicious.databinding.ActivityMainBinding
-import com.google.android.material.color.MaterialColors
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -47,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     private var navDestination: NavDestination? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
 
-    private val mainActivityViewModel : MainActivityViewModel by viewModels()
+    private val mainActivityViewModel: MainActivityViewModel by viewModels()
 
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +61,12 @@ class MainActivity : AppCompatActivity() {
         configureNavigationDrawerMenu()
         infoButtonHeaderInfoDialog()
 
+        val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.toolbarMainFragment, R.string.open, R.string.close)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        //navigationDrawerItemClickListener()
+
         navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
             configureActionBarDependingOnDestination(nd)
             navDestination = nd
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
     }
 
-    private fun configureHeaderNavigationDrawer(){
+    private fun configureHeaderNavigationDrawer() {
         val header = binding.navigationView.getHeaderView(0)
         val cityMainLocation = header.findViewById<TextView>(R.id.tvCityMainLocation)
         //val view = View(applicationContext)
@@ -87,17 +87,21 @@ class MainActivity : AppCompatActivity() {
 //                com.google.android.material.R.attr.colorOnSecondary))
 //        }
 
-        mainActivityViewModel.getMainLocation().observe(this){ mainLocation ->
-            if (mainLocation != null){
+        mainActivityViewModel.getMainLocationLive().observe(this) { mainLocation ->
+            if (mainLocation != null) {
                 cityMainLocation.text = mainLocation.name
-            }else{
-                Toast.makeText(applicationContext, "Click on the add button to add a main location", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(
+                    applicationContext,
+                    "Click on the add button to add a main location",
+                    Toast.LENGTH_LONG
+                ).show()
             }
 
         }
     }
 
-    private fun infoButtonHeaderInfoDialog(){
+    private fun infoButtonHeaderInfoDialog() {
         val header = binding.navigationView.getHeaderView(0)
         val infoButton = header.findViewById<ImageView>(R.id.ivInfoButton)
         infoButton.setOnClickListener {
@@ -112,21 +116,47 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun configureNavigationDrawerMenu(){
-        binding.navigationView.menu.add("Other Locations")
+    private fun configureNavigationDrawerMenu() {
+        binding.navigationView.menu.addSubMenu("Other Locations")
 //        mainActivityViewModel.listOtherLocations.observe(this){ listOtherLocations ->
 //            listOtherLocations?.forEach { city ->
 //                binding.navigationView.menu.add(city.name)
 //            }
 //        }
 
+
         mainActivityViewModel.getOtherLocations().observe(this) { listOfCities ->
             binding.navigationView.menu.clear()
+            binding.navigationView.menu.addSubMenu("Other Locations")
+
             listOfCities.forEach { city ->
-                binding.navigationView.menu.add(city.name)
+                binding.navigationView.menu[0].subMenu.add(city.name)
             }
         }
+        binding.navigationView.menu[0].subMenu.item.setOnMenuItemClickListener { item ->
+            Toast.makeText(applicationContext, "$item", Toast.LENGTH_SHORT).show()
+            true
+        }
     }
+
+//    private fun navigationDrawerItemClickListener(){
+//        binding.navigationView.menu[0].setOnMenuItemClickListener { item ->
+//            val itemID = item.itemId
+//            Toast.makeText(applicationContext, "Item ID = $itemID", Toast.LENGTH_SHORT).show()
+//            NavigationUI.onNavDestinationSelected(item, navController)
+//            val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+//            drawerLayout.closeDrawer(GravityCompat.START)
+//            true
+//        }
+//        binding.navigationView.setNavigationItemSelectedListener { item ->
+//            val itemID = item.itemId
+//            Toast.makeText(applicationContext, "Item ID = $itemID", Toast.LENGTH_SHORT).show()
+//            NavigationUI.onNavDestinationSelected(item, navController)
+//            val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
+//            drawerLayout.closeDrawer(GravityCompat.START)
+//            true
+//        }
+//    }
 
     private fun configureNavController(): NavController {
         val navHostFragment =
