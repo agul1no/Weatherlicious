@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.Weatherlicious" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimary">@color/blue_sky</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
@@ -18,9 +18,11 @@
     <style name="Theme.Weatherlicious.NoActionbar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:fitsSystemWindows">true</item>
+        <item name="android:statusBarColor" >@color/transparent</item>
     </style>
 
     <style name="Theme_Dialog" parent="ThemeOverlay.AppCompat.Dialog">

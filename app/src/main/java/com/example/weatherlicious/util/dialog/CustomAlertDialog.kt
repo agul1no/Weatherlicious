@@ -5,16 +5,16 @@ import android.content.Context
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.entities.City
 
-class ConfirmDialog(private val context: Context) {
+class CustomAlertDialog(private val context: Context) {
 
-    fun createConfirmAlterDialog(cityItem: CityItem){
+    fun createCustomAlertDialog(message: String, positiveButtonText: String, negativeButtonText: String){
         val alertDialogBuilder = AlertDialog.Builder(context)
         alertDialogBuilder.setCancelable(false)
-        alertDialogBuilder.setMessage("Do you want add ${cityItem.name} to the List?")
-        alertDialogBuilder.setPositiveButton("Yes") { dialog, which ->
+        alertDialogBuilder.setMessage(message)
+        alertDialogBuilder.setPositiveButton(positiveButtonText) { dialog, _ ->
             dialog.cancel()
         }
-        alertDialogBuilder.setNegativeButton("No") { dialog, which ->
+        alertDialogBuilder.setNegativeButton(negativeButtonText) { dialog, _ ->
             dialog.cancel()
         }
         val alterDialog = alertDialogBuilder.create()

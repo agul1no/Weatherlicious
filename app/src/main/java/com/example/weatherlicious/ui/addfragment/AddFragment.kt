@@ -21,6 +21,7 @@ import com.example.weatherlicious.databinding.FragmentAddBinding
 import com.example.weatherlicious.util.dialog.MainLocationDialog
 import com.example.weatherlicious.util.OnItemClickListener
 import com.example.weatherlicious.util.Resource
+import com.example.weatherlicious.util.dialog.CustomAlertDialog
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -91,10 +92,20 @@ class AddFragment : Fragment(), OnItemClickListener {
     }
 
     override fun onItemClick(position: Int) {
-        val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
-        createAlertDialog(currentCityItem)
-        val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+        addFragmentViewModel.getLocationListNames().observe(viewLifecycleOwner){ listOtherLocations ->
+            val currentCityItemName = adapterCitySearch.getCityItemAtPosition(position).name
+            if (listOtherLocations.size > 10 && !listOtherLocations.contains(currentCityItemName)){
+                val customAlertDialog = CustomAlertDialog(context!!)
+                customAlertDialog.createCustomAlertDialog("You can not add more than 10 cities \n\n" +
+                        "Please navigate to the the main menu and delete some cities", "Ok", "")
+            }else{
+                val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
+                createAlertDialog(currentCityItem)
+                val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
+            }
+        }
+
 //        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
 //        findNavController().navigate(action)
     }

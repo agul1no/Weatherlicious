@@ -61,4 +61,10 @@ interface WeatherDao {
 
     @Query("SELECT * FROM city_table WHERE main_location LIKE 0")
     fun getLocationsList(): LiveData<List<City>>
+
+    @Query("SELECT name FROM city_table WHERE main_location LIKE 0")
+    fun getLocationsListName(): LiveData<List<String>>
+
+    @Query("SELECT * FROM city_table WHERE name LIKE :name")
+    fun searchCityObjectInDB(name: String): City
 }

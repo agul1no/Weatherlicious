@@ -1,12 +1,15 @@
 package com.example.weatherlicious
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -20,16 +23,28 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
+import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.ActivityMainBinding
+import com.example.weatherlicious.util.dialog.CustomAlertDialog
+import com.example.weatherlicious.util.dialog.DeleteOrMakeMainLocationDialog
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Response
+import java.util.*
 
 
 @AndroidEntryPoint
@@ -39,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var navController: NavController
     private var navDestination: NavDestination? = null
+    private lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
@@ -49,11 +65,22 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbarMainFragment = findViewById<View>(R.id.toolbarMainFragment) as Toolbar
+        val toolbarMainFragment = findViewById<View>(R.id.toolbarMainActivity) as Toolbar
         setSupportActionBar(toolbarMainFragment)
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.transparent)))
 
         navController = configureNavController()
-        appBarConfiguration = configureAppBar(navController)
+        drawerLayout = binding.drawerLayout //findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navView: NavigationView = binding.navigationView
+
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.mainFragment,
+            ), drawerLayout
+        )
+
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
 
         setToolbarItemListener()
 
@@ -61,8 +88,9 @@ class MainActivity : AppCompatActivity() {
         configureNavigationDrawerMenu()
         infoButtonHeaderInfoDialog()
 
-        val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.toolbarMainFragment, R.string.open, R.string.close)
+
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.appBarMain.toolbarMainActivity, R.string.open, R.string.close)
+        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         //navigationDrawerItemClickListener()
@@ -75,20 +103,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        statusBarListener()
     }
 
     private fun configureHeaderNavigationDrawer() {
-        val header = binding.navigationView.getHeaderView(0)
-        val cityMainLocation = header.findViewById<TextView>(R.id.tvCityMainLocation)
-        //val view = View(applicationContext)
-//        mainActivityViewModel.mainLocation.observe(this){ mainLocation ->
-//            cityMainLocation.text = mainLocation
-//            cityMainLocation.setTextColor(MaterialColors.getColor(cityMainLocation,
-//                com.google.android.material.R.attr.colorOnSecondary))
-//        }
-
         mainActivityViewModel.getMainLocationLive().observe(this) { mainLocation ->
             if (mainLocation != null) {
+                val header = binding.navigationView.getHeaderView(0)
+                val cityMainLocation = header.findViewById<TextView>(R.id.tvCityMainLocation)
                 cityMainLocation.text = mainLocation.name
             } else {
                 Toast.makeText(
@@ -97,7 +119,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
-
         }
     }
 
@@ -108,7 +129,7 @@ class MainActivity : AppCompatActivity() {
             val alertDialogBuilder = AlertDialog.Builder(this)
             alertDialogBuilder.setCancelable(false)
             alertDialogBuilder.setMessage("Click on a city to delete it or make it your main location")
-            alertDialogBuilder.setPositiveButton("Yes") { dialog, _ ->
+            alertDialogBuilder.setPositiveButton("Ok") { dialog, _ ->
                 dialog.cancel()
             }
             val alterDialog = alertDialogBuilder.create()
@@ -118,80 +139,46 @@ class MainActivity : AppCompatActivity() {
 
     private fun configureNavigationDrawerMenu() {
         binding.navigationView.menu.addSubMenu("Other Locations")
-//        mainActivityViewModel.listOtherLocations.observe(this){ listOtherLocations ->
-//            listOtherLocations?.forEach { city ->
-//                binding.navigationView.menu.add(city.name)
-//            }
-//        }
-
 
         mainActivityViewModel.getOtherLocations().observe(this) { listOfCities ->
             binding.navigationView.menu.clear()
             binding.navigationView.menu.addSubMenu("Other Locations")
+            mainActivityViewModel.getListOfRemoteForecastWeathersByCity(listOfCities)
 
-            listOfCities.forEach { city ->
-                binding.navigationView.menu[0].subMenu.add(city.name)
+            mainActivityViewModel.listOfResponses.observe(this){ listOfResponses ->
+
+                listOfCities.forEachIndexed { index, city ->
+                    binding.navigationView.menu[0].subMenu.add(city.name).setActionView(R.layout.drawer_menu_image_temperature)
+                    val imageView = binding.navigationView.menu[0].subMenu[index].actionView.findViewById<ImageView>(R.id.cityWeatherImage)
+                    Glide.with(applicationContext).load("https:${listOfResponses[index].body()!!.current.condition.icon}")
+                        .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
+                        .into(imageView)
+                    val textTemperature = binding.navigationView.menu[0].subMenu[index].actionView.findViewById<TextView>(R.id.temperature)
+                    textTemperature.text = "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
+                    binding.navigationView.menu[0].subMenu[index].setOnMenuItemClickListener { cityName ->
+                        Toast.makeText(applicationContext, "You have selected $cityName", Toast.LENGTH_SHORT).show()
+
+//                        val city = mainActivityViewModel.searchCityObjectInDB(item.toString())
+//                        mainActivityViewModel.insertCityResettingMainLocation(city)
+                        // make searchCityObject suspend, observe it from the UI, update new main location
+                        true
+                    }
+                }
             }
         }
-        binding.navigationView.menu[0].subMenu.item.setOnMenuItemClickListener { item ->
-            Toast.makeText(applicationContext, "$item", Toast.LENGTH_SHORT).show()
-            true
-        }
     }
-
-//    private fun navigationDrawerItemClickListener(){
-//        binding.navigationView.menu[0].setOnMenuItemClickListener { item ->
-//            val itemID = item.itemId
-//            Toast.makeText(applicationContext, "Item ID = $itemID", Toast.LENGTH_SHORT).show()
-//            NavigationUI.onNavDestinationSelected(item, navController)
-//            val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
-//            drawerLayout.closeDrawer(GravityCompat.START)
-//            true
-//        }
-//        binding.navigationView.setNavigationItemSelectedListener { item ->
-//            val itemID = item.itemId
-//            Toast.makeText(applicationContext, "Item ID = $itemID", Toast.LENGTH_SHORT).show()
-//            NavigationUI.onNavDestinationSelected(item, navController)
-//            val drawerLayout = findViewById<DrawerLayout>(R.id.drawerLayout)
-//            drawerLayout.closeDrawer(GravityCompat.START)
-//            true
-//        }
-//    }
 
     private fun configureNavController(): NavController {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.fragmentContainerView) as NavHostFragment
-        navController = navHostFragment.navController
-        return navController
-    }
-
-    private fun configureAppBar(navController: NavController): AppBarConfiguration {
-        //appBarConfiguration = AppBarConfiguration.Builder(navController.graph).build()
-        // Add the id of the fragment where you don't need the back arrow
-        //appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment, R.id.addFragment))
-        supportActionBar?.setBackgroundDrawable(
-            ColorDrawable(
-                ContextCompat.getColor(
-                    this,
-                    R.color.transparent
-                )
-            )
-        )
-        appBarConfiguration =
-            AppBarConfiguration(navController.graph, findViewById(R.id.drawerLayout))
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        return appBarConfiguration
+        return findNavController(R.id.fragmentContainerView)
     }
 
     private fun configureActionBarDependingOnDestination(nd: NavDestination) {
         if (nd.id == R.id.mainFragment) {
-            //supportActionBar?.hide()
-            binding.toolbarMainFragment.isVisible = true
+            binding.appBarMain.toolbarMainActivity.isVisible = true
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
-            //window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
         }
         if (nd.id == R.id.addFragment) {
-            binding.toolbarMainFragment.isVisible = false
+            binding.appBarMain.toolbarMainActivity.isVisible = false
         }
     }
 
@@ -202,7 +189,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setToolbarItemListener() {
-        binding.toolbarMainFragment.setOnMenuItemClickListener { menuItem ->
+        binding.appBarMain.toolbarMainActivity.setOnMenuItemClickListener { menuItem ->
             navigateToAddFragment(menuItem)
         }
     }
@@ -210,8 +197,6 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToAddFragment(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.action_add -> {
-                // Navigate to add screen
-                //findNavController().navigate(R.id.action_mainFragment_to_addFragment)
                 navController.navigate(R.id.action_mainFragment_to_addFragment)
                 true
             }
@@ -234,17 +219,25 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
             }
-//            R.id.splashFragment -> { finish() }
             R.id.addFragment -> {
                 super.onBackPressed()
             }
-//            R.id.gameFragment -> { super.onBackPressed() }
-//            R.id.afterGameFragment -> { super.onBackPressed() }
         }
-
     }
 
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return super.onOptionsItemSelected(item)
-//    }
+    private fun statusBarListener(){
+        val decorView = window.decorView
+        decorView.setOnSystemUiVisibilityChangeListener { visibility ->
+            if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
+                val timer = object: CountDownTimer(1000, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {}
+                    override fun onFinish() {
+                        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+                    }
+                }
+                timer.start()
+            }
+        }
+    }
+
 }

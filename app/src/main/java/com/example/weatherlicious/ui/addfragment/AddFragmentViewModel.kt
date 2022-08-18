@@ -1,5 +1,6 @@
 package com.example.weatherlicious.ui.addfragment
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -72,5 +73,13 @@ class AddFragmentViewModel @Inject constructor(
             weatherRepository.changeMainLocationFromDBToZero()
             weatherRepository.insertCity(city)
         }
+    }
+
+    fun getLocationList(): LiveData<List<City>>{
+        return weatherRepository.getLocationsList()
+    }
+
+    fun getLocationListNames(): LiveData<List<String>>{
+        return weatherRepository.getLocationsListName()
     }
 }

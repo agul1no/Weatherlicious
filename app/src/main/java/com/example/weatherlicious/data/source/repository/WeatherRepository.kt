@@ -55,4 +55,8 @@ interface WeatherRepository {
     fun getMainLocation(): City?
 
     fun getLocationsList(): LiveData<List<City>>
+
+    fun getLocationsListName(): LiveData<List<String>>
+
+    fun searchCityObjectInDB(name: String): City
 }

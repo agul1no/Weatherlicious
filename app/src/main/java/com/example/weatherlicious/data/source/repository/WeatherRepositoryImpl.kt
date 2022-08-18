@@ -106,4 +106,12 @@ class WeatherRepositoryImpl @Inject constructor(
     override fun getLocationsList(): LiveData<List<City>> {
         return weatherLocal.getLocationsList()
     }
+
+    override fun getLocationsListName(): LiveData<List<String>> {
+        return weatherLocal.getLocationsListName()
+    }
+
+    override fun searchCityObjectInDB(name: String): City{
+        return weatherLocal.searchCityObjectInDB(name)
+    }
 }

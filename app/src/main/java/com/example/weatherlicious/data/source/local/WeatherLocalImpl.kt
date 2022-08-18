@@ -78,4 +78,12 @@ class WeatherLocalImpl @Inject constructor(
     override fun getLocationsList(): LiveData<List<City>> {
         return weatherDatabase.weatherDao.getLocationsList()
     }
+
+    override fun getLocationsListName(): LiveData<List<String>> {
+        return weatherDatabase.weatherDao.getLocationsListName()
+    }
+
+    override fun searchCityObjectInDB(name: String): City{
+        return weatherDatabase.weatherDao.searchCityObjectInDB(name)
+    }
 }
