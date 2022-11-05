@@ -9,6 +9,7 @@ import android.os.CountDownTimer
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -36,6 +37,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.ActivityMainBinding
+import com.example.weatherlicious.ui.mainfragment.MainFragmentDirections
 import com.example.weatherlicious.util.dialog.CustomAlertDialog
 import com.example.weatherlicious.util.dialog.DeleteOrMakeMainLocationDialog
 import com.google.android.material.navigation.NavigationView
@@ -74,9 +76,8 @@ class MainActivity : AppCompatActivity() {
         val navView: NavigationView = binding.navigationView
 
         appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.mainFragment,
-            ), drawerLayout
+            navController.graph,
+            drawerLayout
         )
 
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -89,10 +90,10 @@ class MainActivity : AppCompatActivity() {
         infoButtonHeaderInfoDialog()
 
 
-        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.appBarMain.toolbarMainActivity, R.string.open, R.string.close)
-        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
+//        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.appBarMain.toolbarMainActivity, R.string.open, R.string.close)
+//        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
+//        drawerLayout.addDrawerListener(toggle)
+//        toggle.syncState()
         //navigationDrawerItemClickListener()
 
         navController.addOnDestinationChangedListener { _, nd: NavDestination, _ ->
@@ -157,6 +158,10 @@ class MainActivity : AppCompatActivity() {
                     textTemperature.text = "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
                     binding.navigationView.menu[0].subMenu[index].setOnMenuItemClickListener { cityName ->
                         Toast.makeText(applicationContext, "You have selected $cityName", Toast.LENGTH_SHORT).show()
+                        drawerLayout.closeDrawer(GravityCompat.START)
+                        val action = MainFragmentDirections.actionMainFragmentToDetailFragment(cityName.toString())
+                        //navController.navigate(action)
+                        findNavController(R.id.fragmentContainerView).navigate(action)
 
 //                        val city = mainActivityViewModel.searchCityObjectInDB(item.toString())
 //                        mainActivityViewModel.insertCityResettingMainLocation(city)
@@ -173,9 +178,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureActionBarDependingOnDestination(nd: NavDestination) {
-        if (nd.id == R.id.mainFragment) {
+        if (nd.id == R.id.mainFragment || nd.id == R.id.detailFragment) {
             binding.appBarMain.toolbarMainActivity.isVisible = true
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+            //window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
         }
         if (nd.id == R.id.addFragment) {
             binding.appBarMain.toolbarMainActivity.isVisible = false

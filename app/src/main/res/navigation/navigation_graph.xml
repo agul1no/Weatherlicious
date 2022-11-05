@@ -17,6 +17,13 @@
             app:exitAnim="@anim/to_up"
             app:popEnterAnim="@anim/from_up"
             app:popExitAnim="@anim/to_bottom" />
+        <action
+            android:id="@+id/action_mainFragment_to_detailFragment"
+            app:destination="@id/detailFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/to_left"
+            app:popEnterAnim="@anim/from_left"
+            app:popExitAnim="@anim/to_right" />
     </fragment>
     <fragment
         android:id="@+id/addFragment"
@@ -28,5 +35,19 @@
             app:destination="@id/mainFragment"
             app:enterAnim="@anim/from_up"
             app:exitAnim="@anim/to_bottom" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.weatherlicious.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_detailFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/from_left"
+            app:exitAnim="@anim/to_right" />
+        <argument
+            android:name="cityName"
+            app:argType="string" />
     </fragment>
 </navigation>
