@@ -14,7 +14,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.weatherlicious.DetailFragmentArgs
 import com.example.weatherlicious.data.model.forecastweather.ForecastDay
 import com.example.weatherlicious.data.model.forecastweather.Hour
 import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather

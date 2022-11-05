@@ -24,6 +24,8 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -172,6 +174,13 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+//    private fun createNewFragment() {
+//        val fragmentManager = getFragmentManager()
+//        val fragmentTransition = fragmentManager.beginTransaction()
+//        val newFragment = Fragment()
+//        fragmentTransition.add(R.id.fragmentContainerView, newFragment)
+//    }
 
     private fun configureNavController(): NavController {
         return findNavController(R.id.fragmentContainerView)
