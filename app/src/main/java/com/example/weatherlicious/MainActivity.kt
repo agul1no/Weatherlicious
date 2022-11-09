@@ -1,22 +1,19 @@
 package com.example.weatherlicious
 
 import android.app.AlertDialog
-import android.app.Dialog
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -24,9 +21,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -36,19 +31,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.example.weatherlicious.data.model.forecastweather.RemoteForecastWeather
-import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.ActivityMainBinding
 import com.example.weatherlicious.ui.mainfragment.MainFragmentDirections
-import com.example.weatherlicious.util.dialog.CustomAlertDialog
-import com.example.weatherlicious.util.dialog.DeleteOrMakeMainLocationDialog
+import com.example.weatherlicious.util.Constants
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import retrofit2.Response
-import java.util.*
+import java.lang.IndexOutOfBoundsException
 
 
 @AndroidEntryPoint
@@ -63,6 +51,8 @@ class MainActivity : AppCompatActivity() {
 
     private val mainActivityViewModel: MainActivityViewModel by viewModels()
 
+    private val TAG = "Main Activity"
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +61,14 @@ class MainActivity : AppCompatActivity() {
 
         val toolbarMainFragment = findViewById<View>(R.id.toolbarMainActivity) as Toolbar
         setSupportActionBar(toolbarMainFragment)
-        supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.transparent)))
+        supportActionBar?.setBackgroundDrawable(
+            ColorDrawable(
+                ContextCompat.getColor(
+                    this,
+                    R.color.transparent
+                )
+            )
+        )
 
         navController = configureNavController()
         drawerLayout = binding.drawerLayout //findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -87,10 +84,11 @@ class MainActivity : AppCompatActivity() {
 
         setToolbarItemListener()
 
+        Log.i(TAG, "Start to configure Nav Drawer")
         configureHeaderNavigationDrawer()
         configureNavigationDrawerMenu()
         infoButtonHeaderInfoDialog()
-
+        Log.i(TAG, "Stop to configure Nav Drawer")
 
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.appBarMain.toolbarMainActivity, R.string.open, R.string.close)
 //        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
@@ -110,11 +108,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureHeaderNavigationDrawer() {
+        Log.i(TAG, "Begin configureHeaderNavigationDrawer()")
+        mainActivityViewModel.getRemoteForecastWeatherByCity()
         mainActivityViewModel.getMainLocationLive().observe(this) { mainLocation ->
+            Log.i(TAG, "Begin of the observation of main location in configureHeaderNavigationDrawer()")
             if (mainLocation != null) {
                 val header = binding.navigationView.getHeaderView(0)
-                val cityMainLocation = header.findViewById<TextView>(R.id.tvCityMainLocation)
-                cityMainLocation.text = mainLocation.name
+                val cityNameMainLocation = header.findViewById<TextView>(R.id.tvCityMainLocation)
+                val imageWeatherMainLocation = header.findViewById<ImageView>(R.id.ivMainLocation)
+                val temperatureWeatherMainLocation =
+                    header.findViewById<TextView>(R.id.tvTemperature)
+                cityNameMainLocation.text = mainLocation.name
+                //mainActivityViewModel.getRemoteForecastWeatherByCity()
+                var mainLocationImageUrl = "//cdn.weatherapi.com/weather/64x64/day/113.png"
+                var mainLocationTemperature = ""
+                mainActivityViewModel.remoteForecastWeatherByCity.observe(
+                    this,
+                    Observer { remoteForecastWeather ->
+                        mainLocationImageUrl =
+                            remoteForecastWeather.data?.current?.condition?.icon.toString()
+                        mainLocationTemperature =
+                            remoteForecastWeather.data?.current?.temp_c?.toInt().toString()
+                    })
+                Glide.with(applicationContext).load("https:${mainLocationImageUrl}").centerCrop()
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(imageWeatherMainLocation)
+                temperatureWeatherMainLocation.text = mainLocationTemperature
             } else {
                 Toast.makeText(
                     applicationContext,
@@ -122,7 +141,12 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
             }
+            Log.i(
+                TAG,
+                "End of the observation of main location in configureHeaderNavigationDrawer()"
+            )
         }
+        Log.i(TAG, "End configureHeaderNavigationDrawer()")
     }
 
     private fun infoButtonHeaderInfoDialog() {
@@ -141,46 +165,51 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun configureNavigationDrawerMenu() {
-        binding.navigationView.menu.addSubMenu("Other Locations")
+        //binding.navigationView.menu.addSubMenu("Other Locations")
 
-        mainActivityViewModel.getOtherLocations().observe(this) { listOfCities ->
+        mainActivityViewModel.getNotMainLocations().observe(this) { listOfCities ->
             binding.navigationView.menu.clear()
             binding.navigationView.menu.addSubMenu("Other Locations")
             mainActivityViewModel.getListOfRemoteForecastWeathersByCity(listOfCities)
 
-            mainActivityViewModel.listOfResponses.observe(this){ listOfResponses ->
-
+            mainActivityViewModel.listOfResponses.observe(this) { listOfResponses ->
                 listOfCities.forEachIndexed { index, city ->
-                    binding.navigationView.menu[0].subMenu.add(city.name).setActionView(R.layout.drawer_menu_image_temperature)
-                    val imageView = binding.navigationView.menu[0].subMenu[index].actionView.findViewById<ImageView>(R.id.cityWeatherImage)
-                    Glide.with(applicationContext).load("https:${listOfResponses[index].body()!!.current.condition.icon}")
-                        .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
-                        .into(imageView)
-                    val textTemperature = binding.navigationView.menu[0].subMenu[index].actionView.findViewById<TextView>(R.id.temperature)
-                    textTemperature.text = "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
-                    binding.navigationView.menu[0].subMenu[index].setOnMenuItemClickListener { cityName ->
-                        Toast.makeText(applicationContext, "You have selected $cityName", Toast.LENGTH_SHORT).show()
-                        drawerLayout.closeDrawer(GravityCompat.START)
-                        val action = MainFragmentDirections.actionMainFragmentToDetailFragment(cityName.toString())
-                        //navController.navigate(action)
-                        findNavController(R.id.fragmentContainerView).navigate(action)
+                    try {
+                        Log.i(TAG, "Index = $index")
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.add(city.name)
+                            .setActionView(R.layout.drawer_menu_image_temperature)
+                        val imageView =
+                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<ImageView>(
+                                R.id.cityWeatherImage
+                            )
+                        Glide.with(applicationContext)
+                            .load("https:${listOfResponses[index].body()!!.current.condition.icon}")
+                            .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
+                            .into(imageView)
+                        val textTemperature =
+                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<TextView>(
+                                R.id.temperature
+                            )
+                        textTemperature.text =
+                            "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].setOnMenuItemClickListener { cityName ->
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                            val action =
+                                MainFragmentDirections.actionMainFragmentToDetailFragment(cityName.toString())
+                            findNavController(R.id.fragmentContainerView).navigate(action)
 
 //                        val city = mainActivityViewModel.searchCityObjectInDB(item.toString())
 //                        mainActivityViewModel.insertCityResettingMainLocation(city)
-                        // make searchCityObject suspend, observe it from the UI, update new main location
-                        true
+                            // make searchCityObject suspend, observe it from the UI, update new main location
+                            true
+                        }
+                    } catch (e: IndexOutOfBoundsException) {
+                        e.printStackTrace()
                     }
                 }
             }
         }
     }
-
-//    private fun createNewFragment() {
-//        val fragmentManager = getFragmentManager()
-//        val fragmentTransition = fragmentManager.beginTransaction()
-//        val newFragment = Fragment()
-//        fragmentTransition.add(R.id.fragmentContainerView, newFragment)
-//    }
 
     private fun configureNavController(): NavController {
         return findNavController(R.id.fragmentContainerView)
@@ -239,11 +268,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun statusBarListener(){
+    private fun statusBarListener() {
         val decorView = window.decorView
         decorView.setOnSystemUiVisibilityChangeListener { visibility ->
             if (visibility and View.SYSTEM_UI_FLAG_FULLSCREEN == 0) {
-                val timer = object: CountDownTimer(1000, 1000) {
+                val timer = object : CountDownTimer(1000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {}
                     override fun onFinish() {
                         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN

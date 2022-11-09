@@ -13,4 +13,8 @@ object Constants {
     const val TIME_FORMAT_HOURS_MINUTES = "HH:mm"
     const val TIME_FORMAT_MINUTES_SECONDS = "mm:ss"
     const val TIME_FORMAT_HOURS = "HH"
+
+    const val MAXIMUM_AMOUNT_CITIES = 10;
+
+    const val FIRST_MENU_ITEM = 0
 }

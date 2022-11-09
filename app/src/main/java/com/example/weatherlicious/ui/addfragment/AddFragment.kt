@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherlicious.data.model.searchautocomplete.CityItem
 import com.example.weatherlicious.data.source.local.entities.City
 import com.example.weatherlicious.databinding.FragmentAddBinding
+import com.example.weatherlicious.util.Constants
 import com.example.weatherlicious.util.dialog.MainLocationDialog
 import com.example.weatherlicious.util.OnItemClickListener
 import com.example.weatherlicious.util.Resource
@@ -94,20 +95,19 @@ class AddFragment : Fragment(), OnItemClickListener {
     override fun onItemClick(position: Int) {
         addFragmentViewModel.getLocationListNames().observe(viewLifecycleOwner){ listOtherLocations ->
             val currentCityItemName = adapterCitySearch.getCityItemAtPosition(position).name
-            if (listOtherLocations.size > 10 && !listOtherLocations.contains(currentCityItemName)){
+            if (listOtherLocations.size > Constants.MAXIMUM_AMOUNT_CITIES && !listOtherLocations.contains(currentCityItemName)){
                 val customAlertDialog = CustomAlertDialog(context!!)
                 customAlertDialog.createCustomAlertDialog("You can not add more than 10 cities \n\n" +
                         "Please navigate to the the main menu and delete some cities", "Ok", "")
             }else{
                 val currentCityItem = adapterCitySearch.getCityItemAtPosition(position)
                 createAlertDialog(currentCityItem)
+                //hides the keyboard after adding the city to the list
                 val inputMethodManager = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 inputMethodManager.hideSoftInputFromWindow(view?.windowToken, 0)
             }
         }
 
-//        val action = AddFragmentDirections.actionAddFragmentToMainFragment()
-//        findNavController().navigate(action)
     }
 
     private fun createAlertDialog(currentCityItem: CityItem){

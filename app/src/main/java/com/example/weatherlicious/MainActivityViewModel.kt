@@ -29,38 +29,46 @@ class MainActivityViewModel @Inject constructor(
     private var _listOfResponses = MutableLiveData<MutableList<Response<RemoteForecastWeather>>>()
     val listOfResponses = _listOfResponses
 
-    fun getRemoteForecastWeatherByCity(){
-        viewModelScope.launch (Dispatchers.IO) {
-            try{
+    private val TAG = "Main Activity View Model"
+
+    fun getRemoteForecastWeatherByCity() {
+        viewModelScope.launch(Dispatchers.IO) {
+            Log.i(TAG, "Start getRemoteForecastWeatherByCity()")
+            try {
                 _remoteForecastWeatherByCity.postValue(Resource.Loading())
                 //_mainLocation.postValue(weatherRepository.getMainLocation().name)
                 var mainLocation = weatherRepository.getMainLocation()?.name
-                if (mainLocation == null){
+                if (mainLocation == null) {
                     mainLocation = "Leipzig"
                 }
                 val response = weatherRepository.getForecastWeatherByCityNextSevenDays(mainLocation)
                 _remoteForecastWeatherByCity.postValue(handleRemoteWeatherForecastResponse(response))
-            }catch (socketTimeoutException: SocketTimeoutException){
-                Log.d("socketTimeoutException getRemoteForecastWeatherByCity", socketTimeoutException.toString())
-            }catch (ioException: IOException){
+            } catch (socketTimeoutException: SocketTimeoutException) {
+                Log.d(
+                    "socketTimeoutException getRemoteForecastWeatherByCity",
+                    socketTimeoutException.toString()
+                )
+            } catch (ioException: IOException) {
                 //Toast.makeText(applicationContext, "$ioException", Toast.LENGTH_SHORT).show()
                 Log.d("ioException getRemoteForecastWeatherByCity", ioException.toString())
             }
+            Log.i(TAG, "End getRemoteForecastWeatherByCity()")
         }
     }
 
     fun getListOfRemoteForecastWeathersByCity(listOfLocations: List<City>) {
         val listOfResponses = mutableListOf<Response<RemoteForecastWeather>>()
-        viewModelScope.launch (Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             listOfLocations.forEach { location ->
-                val response = weatherRepository.getForecastWeatherByCityNextSevenDays(location.name)
+                val response =
+                    weatherRepository.getForecastWeatherByCityNextSevenDays(location.name)
                 listOfResponses.add(response)
             }
             _listOfResponses.postValue(listOfResponses)
         }
     }
 
-    private fun handleRemoteWeatherForecastResponse(response: Response<RemoteForecastWeather>): Resource<RemoteForecastWeather>{
+    private fun handleRemoteWeatherForecastResponse(response: Response<RemoteForecastWeather>): Resource<RemoteForecastWeather> {
         if (response.isSuccessful) {
             response.body()?.let { resultResponse ->
                 return Resource.Success(resultResponse)
@@ -69,23 +77,23 @@ class MainActivityViewModel @Inject constructor(
         return Resource.Error("Error receiving the Remote Forecast Weather")
     }
 
-    fun insertCityResettingMainLocation(city: City){
-        viewModelScope.launch (Dispatchers.IO) {
+    fun insertCityResettingMainLocation(city: City) {
+        viewModelScope.launch(Dispatchers.IO) {
             weatherRepository.changeMainLocationFromDBToZero()
             weatherRepository.insertCity(city)
         }
     }
 
-    fun searchCityObjectInDB(name: String): City{
+    fun searchCityObjectInDB(name: String): City {
         return weatherRepository.searchCityObjectInDB(name)
     }
 
 
-    fun getMainLocationLive() : LiveData<City> {
+    fun getMainLocationLive(): LiveData<City> {
         return weatherRepository.getMainLocationLive()
     }
 
-    fun getOtherLocations(): LiveData<List<City>>{
+    fun getNotMainLocations(): LiveData<List<City>> {
         return weatherRepository.getLocationsList()
     }
 }
