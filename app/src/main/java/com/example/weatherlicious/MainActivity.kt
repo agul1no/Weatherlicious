@@ -21,6 +21,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.get
 import androidx.core.view.isVisible
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -32,8 +33,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.weatherlicious.databinding.ActivityMainBinding
+import com.example.weatherlicious.ui.mainfragment.MainFragment
 import com.example.weatherlicious.ui.mainfragment.MainFragmentDirections
 import com.example.weatherlicious.util.Constants
+import com.example.weatherlicious.util.dialog.DeleteOrMakeMainLocationDialog
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import java.lang.IndexOutOfBoundsException
@@ -61,14 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         val toolbarMainFragment = findViewById<View>(R.id.toolbarMainActivity) as Toolbar
         setSupportActionBar(toolbarMainFragment)
-        supportActionBar?.setBackgroundDrawable(
-            ColorDrawable(
-                ContextCompat.getColor(
-                    this,
-                    R.color.transparent
-                )
-            )
-        )
+        supportActionBar?.setBackgroundDrawable(ColorDrawable(ContextCompat.getColor(this, R.color.transparent)))
 
         navController = configureNavController()
         drawerLayout = binding.drawerLayout //findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -84,11 +80,6 @@ class MainActivity : AppCompatActivity() {
 
         setToolbarItemListener()
 
-        Log.i(TAG, "Start to configure Nav Drawer")
-        configureHeaderNavigationDrawer()
-        configureNavigationDrawerMenu()
-        infoButtonHeaderInfoDialog()
-        Log.i(TAG, "Stop to configure Nav Drawer")
 
 //        val toggle = ActionBarDrawerToggle(this, drawerLayout, binding.appBarMain.toolbarMainActivity, R.string.open, R.string.close)
 //        toggle.drawerArrowDrawable.color = resources.getColor(R.color.white)
@@ -105,6 +96,10 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         statusBarListener()
+
+        configureHeaderNavigationDrawer()
+        configureNavigationDrawerMenu()
+        infoButtonHeaderInfoDialog()
     }
 
     private fun configureHeaderNavigationDrawer() {
@@ -166,44 +161,65 @@ class MainActivity : AppCompatActivity() {
 
     private fun configureNavigationDrawerMenu() {
         //binding.navigationView.menu.addSubMenu("Other Locations")
+        val deleteOrMakeMainLocationDialog = DeleteOrMakeMainLocationDialog(this, mainActivityViewModel)
 
         mainActivityViewModel.getNotMainLocations().observe(this) { listOfCities ->
-            binding.navigationView.menu.clear()
-            binding.navigationView.menu.addSubMenu("Other Locations")
+//            binding.navigationView.menu.clear()
+//            binding.navigationView.menu.addSubMenu("Other Locations")
             mainActivityViewModel.getListOfRemoteForecastWeathersByCity(listOfCities)
 
             mainActivityViewModel.listOfResponses.observe(this) { listOfResponses ->
                 listOfCities.forEachIndexed { index, city ->
+//                    try {
+//                        Log.i(TAG, "Index = $index")
+//                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.add(city.name)
+//                            .setActionView(R.layout.drawer_menu_image_temperature)
+//                        val imageView =
+//                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<ImageView>(
+//                                R.id.cityWeatherImage
+//                            )
+//                        Glide.with(applicationContext)
+//                            .load("https:${listOfResponses[index].body()!!.current.condition.icon}")
+//                            .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
+//                            .into(imageView)
+//                        val textTemperature =
+//                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<TextView>(
+//                                R.id.temperature
+//                            )
+//                        textTemperature.text =
+//                            "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
+//                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].setOnMenuItemClickListener { cityName ->
+//                            drawerLayout.closeDrawer(GravityCompat.START)
+//                            val action =
+//                                MainFragmentDirections.actionMainFragmentToDetailFragment(cityName.toString())
+//                            findNavController(R.id.fragmentContainerView).navigate(action)
+//
+////                        val city = mainActivityViewModel.searchCityObjectInDB(item.toString())
+////                        mainActivityViewModel.insertCityResettingMainLocation(city)
+//                            // make searchCityObject suspend, observe it from the UI, update new main location
+//                            true
+//                        }
+//                    } catch (e: IndexOutOfBoundsException) {
+//                        e.printStackTrace()
+//                    }
                     try {
-                        Log.i(TAG, "Index = $index")
-                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.add(city.name)
-                            .setActionView(R.layout.drawer_menu_image_temperature)
-                        val imageView =
-                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<ImageView>(
-                                R.id.cityWeatherImage
-                            )
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).isVisible = true
+//                        binding.navigationView.menu.getItem(index).isVisible = true
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).title = city.name
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).setActionView(R.layout.drawer_menu_image_temperature)
+                        val imageView = binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).actionView.findViewById<ImageView>(R.id.cityWeatherImage)
                         Glide.with(applicationContext)
                             .load("https:${listOfResponses[index].body()!!.current.condition.icon}")
                             .centerCrop().transition(DrawableTransitionOptions.withCrossFade())
                             .into(imageView)
-                        val textTemperature =
-                            binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].actionView.findViewById<TextView>(
-                                R.id.temperature
-                            )
-                        textTemperature.text =
-                            "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
-                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu[index].setOnMenuItemClickListener { cityName ->
+                        val textTemperature = binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).actionView.findViewById<TextView>(R.id.temperature)
+                        textTemperature.text = "${listOfResponses[index].body()!!.current.temp_c.toInt()}°"
+                        binding.navigationView.menu[Constants.FIRST_MENU_ITEM].subMenu.getItem(index).setOnMenuItemClickListener { cityName ->
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            val action =
-                                MainFragmentDirections.actionMainFragmentToDetailFragment(cityName.toString())
-                            findNavController(R.id.fragmentContainerView).navigate(action)
-
-//                        val city = mainActivityViewModel.searchCityObjectInDB(item.toString())
-//                        mainActivityViewModel.insertCityResettingMainLocation(city)
-                            // make searchCityObject suspend, observe it from the UI, update new main location
+                            deleteOrMakeMainLocationDialog.createDeleteOrMakeMainLocationDialog(navController, city, this, intent)
                             true
                         }
-                    } catch (e: IndexOutOfBoundsException) {
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
@@ -265,9 +281,15 @@ class MainActivity : AppCompatActivity() {
             R.id.addFragment -> {
                 super.onBackPressed()
             }
+            R.id.detailFragment -> {
+                super.onBackPressed()
+            }
         }
     }
 
+    /**
+     * listen to the status of the status bar and hides it after 1 second
+     */
     private fun statusBarListener() {
         val decorView = window.decorView
         decorView.setOnSystemUiVisibilityChangeListener { visibility ->

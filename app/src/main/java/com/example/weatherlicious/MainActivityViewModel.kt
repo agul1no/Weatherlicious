@@ -96,4 +96,10 @@ class MainActivityViewModel @Inject constructor(
     fun getNotMainLocations(): LiveData<List<City>> {
         return weatherRepository.getLocationsList()
     }
+
+    fun deleteCity(city: City) {
+        viewModelScope.launch(Dispatchers.IO) {
+            weatherRepository.deleteCity(city)
+        }
+    }
 }

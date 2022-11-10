@@ -66,21 +66,13 @@ class MainFragment : Fragment() {
         super.onResume()
 
         if(!isNetworkAvailable(context)){
-            mainFragmentViewModel.getLocalCurrentWeather()
-            mainFragmentViewModel.getLocalForecastWeatherHourly()
-            mainFragmentViewModel.getLocalForecastWeatherDaily()
-            mainFragmentViewModel.getLocalCurrentWeatherExtraData()
-            observeLocalCurrentWeather()
-            observeLocalForecastWeatherHourly()
-            observeLocalForecastWeatherDaily()
-            observeLocalCurrentWeatherExtraData()
-            //Toast.makeText(context, "Starting... internet is not available", Toast.LENGTH_SHORT).show()
+            getLocalWeatherFull()
+            observeLocalWeatherFull()
         }
+
         connectionLiveData = ConnectionLiveData(context!!)
         connectionLiveData.observe(viewLifecycleOwner) { isNetworkAvailable ->
             if (isNetworkAvailable) {
-                //mainFragmentViewModel.getRemoteForecastWeatherHourly()
-                //mainFragmentViewModel.getRemoteForecastWeatherDaily()
                 mainFragmentViewModel.getRemoteForecastWeatherByCity()
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalCurrentWeather(context!!)
                 mainFragmentViewModel.transformRemoteForecastWeatherIntoLocalForecastWeatherHourly(context!!)
@@ -90,17 +82,9 @@ class MainFragment : Fragment() {
                 //observeRemoteForecastWeatherHourly()
                 observeRemoteForecastWeatherDaily()
                 observeRemoteForecastWeatherHourlyByCity()
-                //Toast.makeText(context, "Internet is available", Toast.LENGTH_SHORT).show()
             } else {
-                mainFragmentViewModel.getLocalCurrentWeather()
-                mainFragmentViewModel.getLocalForecastWeatherHourly()
-                mainFragmentViewModel.getLocalForecastWeatherDaily()
-                mainFragmentViewModel.getLocalCurrentWeatherExtraData()
-                observeLocalCurrentWeather()
-                observeLocalForecastWeatherHourly()
-                observeLocalForecastWeatherDaily()
-                observeLocalCurrentWeatherExtraData()
-                //Toast.makeText(context, "Internet is not available", Toast.LENGTH_SHORT).show()
+                getLocalWeatherFull()
+                observeLocalWeatherFull()
             }
         }
     }
@@ -135,6 +119,20 @@ class MainFragment : Fragment() {
             }
         }
         return false
+    }
+
+    private fun getLocalWeatherFull() {
+        mainFragmentViewModel.getLocalCurrentWeather()
+        mainFragmentViewModel.getLocalForecastWeatherHourly()
+        mainFragmentViewModel.getLocalForecastWeatherDaily()
+        mainFragmentViewModel.getLocalCurrentWeatherExtraData()
+    }
+
+    private fun observeLocalWeatherFull() {
+        observeLocalCurrentWeather()
+        observeLocalForecastWeatherHourly()
+        observeLocalForecastWeatherDaily()
+        observeLocalCurrentWeatherExtraData()
     }
 
     private fun initializeRecyclerViewHourly(): RecyclerView {

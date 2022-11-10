@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:theme="@style/NavigationDrawerTextStyle">
+    <item android:title="Another Locations">
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item
+                    android:id="@+id/city1"
+                    android:title="City1"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city2"
+                    android:title="City2"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city3"
+                    android:title="City3"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city4"
+                    android:title="City4"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city5"
+                    android:title="City5"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city6"
+                    android:title="City6"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city7"
+                    android:title="City7"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city8"
+                    android:title="City8"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city9"
+                    android:title="City9"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/city10"
+                    android:title="City10"
+                    android:visible="false" />
+
+            </group>
+        </menu>
+    </item>
+
+</menu>
