@@ -16,7 +16,7 @@
             app:enterAnim="@anim/from_bottom"
             app:exitAnim="@anim/to_up"
             app:popEnterAnim="@anim/from_up"
-            app:popExitAnim="@anim/to_bottom" />
+            app:popExitAnim="@anim/to_botton_disappearing" />
         <action
             android:id="@+id/action_mainFragment_to_detailFragment"
             app:destination="@id/detailFragment"
@@ -49,5 +49,8 @@
         <argument
             android:name="cityName"
             app:argType="string" />
+        <action
+            android:id="@+id/action_detailFragment_to_addFragment"
+            app:destination="@id/addFragment" />
     </fragment>
 </navigation>

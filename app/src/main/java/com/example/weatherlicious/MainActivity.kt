@@ -256,7 +256,8 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToAddFragment(menuItem: MenuItem): Boolean {
         return when (menuItem.itemId) {
             R.id.action_add -> {
-                navController.navigate(R.id.action_mainFragment_to_addFragment)
+                if (navDestination?.id == R.id.mainFragment) navController.navigate(R.id.action_mainFragment_to_addFragment)
+                else if (navDestination?.id == R.id.detailFragment) navController.navigate(R.id.action_detailFragment_to_addFragment)
                 true
             }
 
